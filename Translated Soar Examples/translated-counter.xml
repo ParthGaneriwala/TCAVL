@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>
+int state_superstate_name; 
+int state_superstate_top_state; 
+int state_name; 
+int state_num; 
+int state_operator; 
+int state_superstate_operator; 
+int state_superstate_first; 
+int state_top_state; 
+const int nil = 0;
+const int increment = 1; 
+const int initialize_counter = 2; 
+const int counter = 3; 
+broadcast chan Run_Rule;
+</declaration>
+	<template>
+		<name x="5" y="5">elaborate_state_name</name>
+		<location id="id0" x="263" y="-76">
+			<name x="263" y="-76">Run</name>
+		</location>
+		<location id="id1" x="0" y="-76">
+			<name x="0" y="-76">Start</name>
+			<committed/>
+		</location>
+		<init ref="id1"/>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="102" y="-51">Run_Rule?</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-34" y="-161">state_superstate_operator_name == state_superstate_name</label>
+			<label kind="synchronisation" x="102" y="-136">Run_Rule?</label>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">elaborate_state_top_state</name>
+		<location id="id2" x="178" y="-8">
+			<name x="178" y="-8">Run</name>
+		</location>
+		<location id="id3" x="-144" y="-8">
+			<name x="-144" y="-8">Start</name>
+			<committed/>
+		</location>
+		<init ref="id3"/>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-25" y="8">Run_Rule?</label>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="-25" y="-59">Run_Rule?</label>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">counter_detect_goal_achieved</name>
+		<location id="id4" x="297" y="-8">
+			<name x="297" y="-8">Run</name>
+		</location>
+		<location id="id5" x="-68" y="-8">
+			<name x="-68" y="-8">Start</name>
+			<committed/>
+		</location>
+		<init ref="id5"/>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="42" y="0">Run_Rule?</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id4"/>
+			<label kind="guard" x="-34" y="-76">state_num == 7 &amp;&amp; state_name == counter</label>
+			<label kind="synchronisation" x="42" y="-51">Run_Rule?</label>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">counter_monitor_state</name>
+		<location id="id6" x="178" y="0">
+			<name x="178" y="0">Run</name>
+		</location>
+		<location id="id7" x="-76" y="0">
+			<name x="-76" y="0">Start</name>
+			<committed/>
+		</location>
+		<init ref="id7"/>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="5" y="5">Run_Rule?</label>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id6"/>
+			<label kind="guard" x="-34" y="-59">state_name == counter</label>
+			<label kind="synchronisation" x="0" y="-42">Run_Rule?</label>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">elaborate_top_state_top_state</name>
+		<location id="id8" x="187" y="8">
+			<name x="187" y="8">Run</name>
+		</location>
+		<location id="id9" x="-68" y="8">
+			<name x="-68" y="8">Start</name>
+			<committed/>
+		</location>
+		<init ref="id9"/>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="17" y="17">Run_Rule?</label>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id8"/>
+			<label kind="guard" x="-17" y="-51">state_superstate == nil</label>
+			<label kind="synchronisation" x="17" y="-25">Run_Rule?</label>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">counter_propose_increment</name>
+		<location id="id10" x="246" y="-8">
+			<name x="246" y="-8">Run</name>
+		</location>
+		<location id="id11" x="-25" y="-8">
+			<name x="-25" y="-8">Start</name>
+			<committed/>
+		</location>
+		<init ref="id11"/>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="68" y="0">Run_Rule?</label>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id10"/>
+			<label kind="guard" x="25" y="-59">state_name == counter</label>
+			<label kind="synchronisation" x="68" y="-42">Run_Rule?</label>
+			<label kind="assignment" x="-34" y="-76">state_superstate_operator_name = increment</label>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">counter_apply_increment</name>
+		<location id="id12" x="484" y="-8">
+			<name x="484" y="-8">Run</name>
+		</location>
+		<location id="id13" x="102" y="-8">
+			<name x="102" y="-8">Start</name>
+			<committed/>
+		</location>
+		<init ref="id13"/>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id13"/>
+			<label kind="synchronisation" x="255" y="0">Run_Rule?</label>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id12"/>
+			<label kind="guard" x="0" y="-76">state_name == counter &amp;&amp; state_operator == state_superstate_operator &amp;&amp; state_superstate_operator_name == increment &amp;&amp; state_superstate_operator_first == state_superstate_first &amp;&amp; state_num == state_superstate_first</label>
+			<label kind="synchronisation" x="255" y="-42">Run_Rule?</label>
+			<label kind="assignment" x="153" y="-59">state_num = state_superstate_first + 1</label>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">counter_propose_initialize_counter</name>
+		<location id="id14" x="323" y="-8">
+			<name x="323" y="-8">Run</name>
+		</location>
+		<location id="id15" x="-34" y="-8">
+			<name x="-34" y="-8">Start</name>
+			<committed/>
+		</location>
+		<init ref="id15"/>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id15"/>
+			<label kind="synchronisation" x="110" y="0">Run_Rule?</label>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id14"/>
+			<label kind="guard" x="8" y="-68">state_superstate == nil &amp;&amp; state_name == nil</label>
+			<label kind="synchronisation" x="110" y="-51">Run_Rule?</label>
+			<label kind="assignment" x="-17" y="-85">state_superstate_operator_name = initialize_counter</label>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">counter_apply_initialize_counter</name>
+		<location id="id16" x="476" y="-8">
+			<name x="476" y="-8">Run</name>
+		</location>
+		<location id="id17" x="93" y="-8">
+			<name x="93" y="-8">Start</name>
+			<committed/>
+		</location>
+		<init ref="id17"/>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="263" y="0">Run_Rule?</label>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id16"/>
+			<label kind="guard" x="8" y="-93">state_operator == state_superstate_operator &amp;&amp; state_superstate_operator_name == initialize_counter</label>
+			<label kind="synchronisation" x="263" y="-59">Run_Rule?</label>
+			<label kind="assignment" x="178" y="-76">state_name = counter, state_num = 2</label>
+		</transition>
+	</template>
+	<template>
+		<name>scheduler</name>
+		<location id="id18" x="289" y="-8">
+			<name x="289" y="-8">Check</name>
+		</location>
+		<location id="id19" x="136" y="-8">
+			<name x="136" y="-8">Run</name>
+			<committed/>
+		</location>
+		<location id="id20" x="-17" y="-8">
+			<name x="-17" y="-8">Start</name>
+		</location>
+		<init ref="id20"/>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id19"/>
+			<label kind="synchronisation" x="178" y="8">Run_Rule!</label>
+		</transition>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id18"/>
+			<label kind="guard" x="-8" y="-76">!(state_num == 7 &amp;&amp; state_name == counter)</label>
+		</transition>
+		<transition>
+			<source ref="id20"/>
+			<target ref="id19"/>
+			<label kind="synchronisation" x="102" y="-51">Run_Rule!</label>
+		</transition>
+	</template>
+	<system>
+counter_monitor_state_0 = counter_monitor_state(); 
+elaborate_state_name_0 = elaborate_state_name(); 
+counter_propose_initialize_counter_0 = counter_propose_initialize_counter(); 
+counter_propose_increment_0 = counter_propose_increment(); 
+elaborate_state_top_state_0 = elaborate_state_top_state(); 
+elaborate_top_state_top_state_0 = elaborate_top_state_top_state(); 
+counter_apply_increment_0 = counter_apply_increment(); 
+counter_detect_goal_achieved_0 = counter_detect_goal_achieved(); 
+counter_apply_initialize_counter_0 = counter_apply_initialize_counter(); 
+schd = scheduler();
+goal = counter_detect_goal_achieved(); 
+system counter_monitor_state_0, elaborate_state_name_0, counter_propose_initialize_counter_0, counter_propose_increment_0, elaborate_state_top_state_0, elaborate_top_state_top_state_0, counter_apply_increment_0, counter_detect_goal_achieved_0, counter_apply_initialize_counter_0, goal, schd;</system>
+	<queries>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>
