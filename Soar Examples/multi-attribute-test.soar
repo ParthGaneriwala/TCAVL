@@ -12,8 +12,8 @@ sp {apply*initialize*multi-attribute
 -->
    (<s> ^name multi-attribute
         ^att1 attr
-    ^att2 pipe
-    ^att3 cone)
+        ^att2 pipe
+        ^att3 cone)
 }
 
 sp {propose*check-exists*pipe

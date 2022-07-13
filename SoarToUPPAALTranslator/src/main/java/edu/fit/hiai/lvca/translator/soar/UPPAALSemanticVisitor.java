@@ -301,14 +301,23 @@ public class UPPAALSemanticVisitor extends SoarBaseVisitor<Node> {
         return ctx.children.get(0).accept(this);
     }
 
+    /*
+    07/13/2022 Modification of conjunctive and simple test implementation for troubleshooting purposes
+     */
     @Override
     public Node visitConjunctive_test(SoarParser.Conjunctive_testContext ctx) {
-        return null;
+        System.out.println( "This is the output for a conjunctive test\n" + ctx.children.get(0).getText());
+        return null; //ctx.children.get(0).accept(this);
     }
 
     @Override
     public Node visitSimple_test(SoarParser.Simple_testContext ctx) {
-        return ctx.children.get(0).accept(this);
+        if(ctx.children.get(0) != null) {
+            return ctx.children.get(0).accept(this);
+        } else {
+            System.out.println("Found no simple test at " + ctx.getText());
+            return null;
+        }
     }
 
     @Override

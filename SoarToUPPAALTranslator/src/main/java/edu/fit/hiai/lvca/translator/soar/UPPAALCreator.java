@@ -295,8 +295,12 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
         return new DefaultElement("").addText(innerVisitConditionVisit(condCtx.attr_value_tests(), localVariableDictionary, idTest));
     }
 
+    /*
+    07/13/2022 Modified implementation for troubleshooting
+     */
     private String innerVisitConditionVisit(List<SoarParser.Attr_value_testsContext> attrValueTestsCtxs, Map<String, String> localVariableDictionary, String idTest)
     {
+        System.out.println("Visiting inner conditions for idTest: " + idTest);
         List<String> stateVariableComparisons = new LinkedList<>();
 
         // Variable in left hand side
@@ -317,6 +321,7 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
                 }
                 else
                 {
+                    System.out.println("Checking number of values for " + attributeCtx.getText());
                     int numberOfValues = attributeCtx.value_test().size();
 
                     if (numberOfValues == 1)
@@ -427,7 +432,8 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
     @Override
     public Element visitConjunctive_test(SoarParser.Conjunctive_testContext ctx)
     {
-        return null;
+        System.out.println(ctx.toString());
+        return ctx.children.get(0).accept(this);
     }
 
     @Override

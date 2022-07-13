@@ -196,10 +196,16 @@ class SymbolVisitor extends SoarBaseVisitor<SymbolTree>
         return null;
     }
 
+    /*
+    07/13/2022 Changed visitTest to actually use conjunctive tests when present
+     */
     @Override
     public SymbolTree visitTest(SoarParser.TestContext ctx)
     {
-       return ctx.simple_test().accept(this);
+       System.out.println("Running a test on " + ctx.getText() + "\n");
+
+       if (ctx.getText().contains("{")) return ctx.conjunctive_test().accept(this);
+       else return ctx.simple_test().accept(this);
     }
 
     @Override
@@ -219,6 +225,12 @@ class SymbolVisitor extends SoarBaseVisitor<SymbolTree>
     {
         return ctx.children.get(0).accept(this);
     }
+
+    /*
+    07/13/2022 Begin implementing conjunctive (AND) tests to translator output
+     */
+    @Override
+    public SymbolTree visitConjunctive_test(SoarParser.Conjunctive_testContext ctx) { return ctx.children.get(0).accept(this); }
 
     @Override
     public SymbolTree visitVariable(SoarParser.VariableContext ctx)
