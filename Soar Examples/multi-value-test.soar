@@ -1,0 +1,32 @@
+sp {propose*initialize*multi-value
+   (state <s> ^superstate nil
+			 -^name)
+-->
+   (<s> ^operator <o> +)
+   (<o> ^name initialize)
+}
+
+sp {apply*initialize*multi-value
+   (state <s> ^operator.name initialize)
+-->
+   (<s> ^num 1 
+		^num 2
+		^num 3
+		^name values)
+}
+
+sp {propose*print*values
+   (state <s> ^name values)
+-->
+   (<s> ^operator <o> +)
+   (<o> ^name print)
+}
+
+sp {apply*print*values
+   (state <s> ^operator.name print ^num <val1>
+			  ^num {<val2> > <val1>}
+			  ^num {<val3> > <val2>})
+-->
+   (write (crlf) |Countdown: | <val3> | | <val2> | | <val1>)
+   (halt)
+}

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC "-//Uppaal Team//DTD Flat System 1.1//EN" "http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd"><nta><declaration>
+int state_&lt;attribute; 
+int state_superstate; 
+int state_att3; 
+int state_operator_name; 
+int state_name; 
+int state_att2; 
+int state_att1; 
+const int nil = 0;
+const int init_multi_attribute = 1; 
+const int cone = 2; 
+const int multi_attribute = 3; 
+const int pipe = 4; 
+const int check_pipe = 5; 
+const int attr = 6; 
+broadcast chan Run_Rule;
+</declaration><template><name x="5" y="5">propose_initialize_multi_attribute</name><declaration/><location x="5" y="5" id="id8"><name x="5" y="5">Run</name></location><location x="5" y="5" id="id9"><name x="5" y="5">Start</name><committed/></location><init ref="id9"/><transition><source ref="id8"/><target ref="id9"/><label x="5" y="5" kind="synchronisation">Run_Rule?</label></transition><transition><source ref="id9"/><target ref="id8"/><label x="5" y="5" kind="guard">state_superstate == nil &amp;&amp; state_name == nil</label><label x="5" y="5" kind="synchronisation">Run_Rule?</label><label x="5" y="5" kind="assignment">state_operator_name = init_multi_attribute</label></transition></template><template><name x="5" y="5">apply_initialize_multi_attribute</name><declaration/><location x="5" y="5" id="id10"><name x="5" y="5">Run</name></location><location x="5" y="5" id="id11"><name x="5" y="5">Start</name><committed/></location><init ref="id11"/><transition><source ref="id10"/><target ref="id11"/><label x="5" y="5" kind="synchronisation">Run_Rule?</label></transition><transition><source ref="id11"/><target ref="id10"/><label x="5" y="5" kind="guard">state_operator_name == init_multi_attribute</label><label x="5" y="5" kind="synchronisation">Run_Rule?</label><label x="5" y="5" kind="assignment">state_name = multi_attribute, state_att3 = cone, state_att2 = pipe, state_att1 = attr</label></transition></template><template><name x="5" y="5">propose_check_exists_pipe</name><declaration/><location x="5" y="5" id="id12"><name x="5" y="5">Run</name></location><location x="5" y="5" id="id13"><name x="5" y="5">Start</name><committed/></location><init ref="id13"/><transition><source ref="id12"/><target ref="id13"/><label x="5" y="5" kind="synchronisation">Run_Rule?</label></transition><transition><source ref="id13"/><target ref="id12"/><label x="5" y="5" kind="guard">state_name == multi_attribute &amp;&amp; state_&lt;attribute &gt; pipe</label><label x="5" y="5" kind="synchronisation">Run_Rule?</label><label x="5" y="5" kind="assignment">state_operator_name = check_pipe</label></transition></template><template><name x="5" y="5">apply_check_exists_pipe_does_exist</name><declaration/><location x="5" y="5" id="id14"><name x="5" y="5">Run</name></location><location x="5" y="5" id="id15"><name x="5" y="5">Start</name><committed/></location><init ref="id15"/><transition><source ref="id14"/><target ref="id15"/><label x="5" y="5" kind="synchronisation">Run_Rule?</label></transition><transition><source ref="id15"/><target ref="id14"/><label x="5" y="5" kind="guard">state_operator_name == check_pipe &amp;&amp; state_&lt;attribute &gt; pipe</label><label x="5" y="5" kind="synchronisation">Run_Rule?</label><label x="5" y="5" kind="assignment"></label></transition></template><template><name>scheduler</name><location x="5" y="5" id="id16"><name x="5" y="5">Check</name></location><location x="5" y="5" id="id17"><name x="5" y="5">Run</name><committed/></location><location x="5" y="5" id="id18"><name x="5" y="5">Start</name></location><init ref="id18"/><transition><source ref="id16"/><target ref="id17"/><label x="5" y="5" kind="synchronisation">Run_Rule!</label></transition><transition><source ref="id17"/><target ref="id16"/><label x="5" y="5" kind="guard">!(state_operator_name == check_pipe &amp;&amp; state_&lt;attribute &gt; pipe)</label></transition><transition><source ref="id18"/><target ref="id17"/><label x="5" y="5" kind="synchronisation">Run_Rule!</label></transition></template><system>
+apply_initialize_multi_attribute_0 = apply_initialize_multi_attribute(); 
+propose_check_exists_pipe_0 = propose_check_exists_pipe(); 
+propose_initialize_multi_attribute_0 = propose_initialize_multi_attribute(); 
+apply_check_exists_pipe_does_exist_0 = apply_check_exists_pipe_does_exist(); 
+schd = scheduler();
+goal = apply_check_exists_pipe_does_exist(); 
+system apply_initialize_multi_attribute_0, propose_check_exists_pipe_0, propose_initialize_multi_attribute_0, apply_check_exists_pipe_does_exist_0, goal, schd;</system></nta>

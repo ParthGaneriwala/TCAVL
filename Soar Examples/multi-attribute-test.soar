@@ -1,0 +1,33 @@
+sp {propose*initialize*multi-attribute
+   (state <s> ^superstate nil
+           -^name)
+-->
+   (<s> ^operator <o> +)
+   (<o> ^name init-multi-attribute)
+}
+
+sp {apply*initialize*multi-attribute
+   (state <s> ^operator <o>)
+   (<o> ^name init-multi-attribute)
+-->
+   (<s> ^name multi-attribute
+        ^att1 attr
+    ^att2 pipe
+    ^att3 cone)
+}
+
+sp {propose*check-exists*pipe
+   (state <s> ^name multi-attribute
+              ^<attribute> pipe)
+-->
+   (<s> ^operator <o> +)
+   (<o> ^name check-pipe)
+}
+
+sp {apply*check-exists*pipe*does-exist
+   (state <s> ^operator.name check-pipe
+              ^<attribute> pipe)
+-->
+   (write (crlf) |The pipe is located at: | <attribute>)
+   (halt)
+}
