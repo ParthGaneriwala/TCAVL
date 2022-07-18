@@ -432,8 +432,8 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
     @Override
     public Element visitConjunctive_test(SoarParser.Conjunctive_testContext ctx)
     {
-        System.out.println(ctx.toString());
-        return ctx.children.get(0).accept(this);
+        System.out.println(ctx.children);
+        return ctx.children.get(2).accept(this);
     }
 
     @Override
