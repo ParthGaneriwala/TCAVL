@@ -3,7 +3,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 <modelVersion>4.0.0</modelVersion>
-    <groupId>edu.fit.hiai.lvca</groupId>
+    <groupId>edu.fit.hiai.lvca.trasnlator</groupId>
     <artifactId>lvca-translator</artifactId>
     <version>1.0-SNAPSHOT</version>
     <build>
@@ -60,7 +60,8 @@
             <version>1.5.0</version>
         </dependency>
 
-<!--        <dependency>-->
+
+        <!--        <dependency>-->
 <!--            <artifactId>..</artifactId>-->
 <!--            <groupId>..</groupId>-->
 <!--            <scope>system</scope>-->
