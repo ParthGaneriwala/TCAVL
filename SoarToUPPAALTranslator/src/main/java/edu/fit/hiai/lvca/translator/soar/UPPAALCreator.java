@@ -2,7 +2,7 @@ package edu.fit.hiai.lvca.translator.soar;
 
 import edu.fit.hiai.lvca.translator.gen.SoarBaseVisitor;
 import edu.fit.hiai.lvca.translator.gen.SoarParser;
-import edu.fit.hiai.lvca.translator.gen.SoarVisitor;
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -34,8 +34,10 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
         UPPAALElementWithXY(String s)
         {
             super(s);
-            this.addAttribute("x", "5");
-            this.addAttribute("y", "5");
+            List<String> XY_coordinates = getNextXYPosition();
+            this.addAttribute("x", XY_coordinates.get(0));
+            this.addAttribute("y", XY_coordinates.get(1));
+
         }
 
     }
@@ -45,6 +47,9 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
     private final Document _doc = DocumentHelper.createDocument();
     private final Set<String> _templateNames = new HashSet<>();
     private Integer _locationCounter = 0;
+    private Integer _x_axis = 0;
+    private List<Integer> _y_axis_values = List.of(0, 100, -100);
+    private Integer _y_axis_index = 0;
     private final Set<String> _globals;
     private SoarParser.Soar_productionContext _goalProductionContext;
 
@@ -71,11 +76,13 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
 
         String vars = "";
 
-        final AtomicInteger i = new AtomicInteger(1);
+        //starting atomicInteger at 2 cause 0 is reserved for "nil",
+        // and 1 is reserved for "proposed" in the context of operator proposal
+        final AtomicInteger i = new AtomicInteger(2);
 
         vars += _globals
                 .stream()
-                .filter(var -> var.startsWith("state"))
+                .filter(var -> var.startsWith("State"))
                 .map(this::simplifiedString)
                 .map(var -> "int " + var + "; \n")
                 .collect(Collectors.joining());
@@ -90,9 +97,17 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
 
         vars += _globals
                 .stream()
-                .filter(var -> !var.startsWith("state"))
+                .filter(var -> !var.startsWith("State"))
                 .map(this::simplifiedString)
                 .map(var -> "const int " + var + " = " + i.getAndIncrement() + "; \n")
+                .collect(Collectors.joining());
+
+        //CJ: continue tweak to make progress in declaration statement
+        vars += _globals
+                .stream()
+                .filter(var -> var.startsWith("State"))
+                .map(this::simplifiedString)
+                .map(var -> "const int init_" + var + " = " + i.getAndIncrement() + "; \n" )
                 .collect(Collectors.joining());
 
 
@@ -104,6 +119,7 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
 
     private Element getScheduler()
     {
+        resetXYPosition();          //reset the XY coordinates of node positioning to 0,0 when creating a new template
         Element template = new DefaultElement("template");
         template.add(new DefaultElement("name").addText("scheduler"));
 
@@ -133,10 +149,27 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
         return i;
     }
 
+    private List<String> getNextXYPosition(){
+
+        String current_x = String.valueOf(_x_axis);
+        _x_axis += 100;
+
+        String current_y = String.valueOf(_y_axis_values.get(_y_axis_index));
+        _y_axis_index = (_y_axis_index + 1) % _y_axis_values.size();
+
+        return List.of(current_x, current_y);
+    }
+    private void resetXYPosition(){
+        _x_axis = 0;
+        _y_axis_index = 0;
+    }
+
     private Element getLocationWithNameElement(String num, String nameText)
     {
         Element runLocation = new UPPAALElementWithXY("location").addAttribute("id", "id" + num);
-
+        //Use same position for location names as well as locations
+        _x_axis -= 100;
+        _y_axis_index = (_y_axis_index +(_y_axis_values.size() - 1)) % _y_axis_values.size();
         Element runName = new UPPAALElementWithXY("name").addText(nameText);
 
         runLocation.add(runName);
@@ -146,6 +179,8 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
 
     private Element getTransitionWithText(String sourceID, String targetID, String kind, String text)
     {
+        //Note: is there a way to get a location element from its id, and subsequently get its location
+        resetXYPosition();
         Element startToRun = new DefaultElement("transition");
 
         Element source = new DefaultElement("source").addAttribute("ref", "id" + sourceID);
@@ -161,24 +196,161 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
         return startToRun;
     }
 
+    private List<Element> getAttrValueTestWithDisjunctions (SoarParser.Soar_productionContext ctx){
+
+        List<Element> attrValueTestWithDisjunctions = new LinkedList<>();
+
+        for ( SoarParser.Attr_value_testsContext attrTest : ctx.condition_side().state_imp_cond().attr_value_tests()) {
+            Element attributeElement = attrTest.accept(this);
+            //if the attribute test involves multiple attributes (assuming a disjunction of attributes)
+            if (attributeElement.attributeValue("size") != null) {
+                attrValueTestWithDisjunctions.add(attributeElement);
+            }
+        }
+
+        ctx.condition_side().cond().forEach(condContext ->{
+            for (SoarParser.Attr_value_testsContext attrTest : condContext.positive_cond().conds_for_one_id().attr_value_tests()){
+                Element attributeElement = attrTest.accept(this);
+                //if the attribute test involves multiple attributes (assuming a disjunction of attributes)
+                if (attributeElement.attributeValue("size") != null) {
+                    attrValueTestWithDisjunctions.add(attributeElement);
+                }
+            }
+
+        });
+
+        return attrValueTestWithDisjunctions;
+    }
+    private  List<Element> getAllSTartToRunTransitions (String runStateID, String startStateID, SoarParser.Soar_productionContext ctx){
+
+        List<Element> startToRuns = new LinkedList<>();
+
+        List<String> replacedGuardStrings = new LinkedList<>();
+        List<String> replacedUpdateStrings = new LinkedList<>();
+
+        String productionName = ctx.sym_constant().getText();
+        Map<String, String> localVariableDictionary = _variableDictionary.get(productionName);
+
+        String id = ctx.condition_side().state_imp_cond().id_test().getText();
+
+        String basicGuards = ctx.condition_side().accept(this).getText();
+        String stateDisjunctionGuards =  innerVisitConditionVisit(ctx.condition_side().state_imp_cond().attr_value_tests(), localVariableDictionary, id, true);
+        String condDisjunctionGuards = ctx.condition_side().cond().stream().map(c -> innerVisitConditionVisit(c.positive_cond().conds_for_one_id().attr_value_tests(), localVariableDictionary, c.positive_cond().conds_for_one_id().id_test().getText(), true))
+                .filter(c -> c != null && !c.equals(""))
+                .collect(Collectors.joining(" && "));
+
+        System.out.println("Local Variable dictionary is " + localVariableDictionary);
+        System.out.println("(Get all options) basic guards: " + basicGuards);
+        System.out.println("(Get all options) state disjunction guards: " + stateDisjunctionGuards);
+        System.out.println("(Get all options) cond disjunction guards: " + condDisjunctionGuards);
+
+
+
+        if (stateDisjunctionGuards.isEmpty() && condDisjunctionGuards.isEmpty()) {
+            replacedGuardStrings.add(basicGuards);
+        } else if (stateDisjunctionGuards.isEmpty()) {
+            replacedGuardStrings.add(basicGuards + " && " + condDisjunctionGuards);
+        } else if (condDisjunctionGuards.isEmpty()) {
+            replacedGuardStrings.add(basicGuards + " && " +stateDisjunctionGuards);
+        } else {
+            replacedGuardStrings.add(basicGuards + " && " + stateDisjunctionGuards + " && " + condDisjunctionGuards);
+        }
+
+        String baseUpdateStatement = ctx.action_side().accept(this).getText();
+        replacedUpdateStrings.add(baseUpdateStatement);
+        //System.out.println("Update statement: " + updateStatement);
+        //stack implementation to get all combination of attribute disjunction values
+        List<Element> attrValueTestWithDisjunctions = getAttrValueTestWithDisjunctions(ctx);
+        for (Element attrElement : attrValueTestWithDisjunctions){
+            List<String> replacedGuardsPopped = new LinkedList<>();           //stores the intermediate guard results after each attribute element replacement
+            List<String> replacedUpdatesPopped = new LinkedList<>();           //stores the intermediate updates results after each attribute element replacement
+
+            while (!replacedGuardStrings.isEmpty()){
+                String guardString = replacedGuardStrings.remove(0);
+                String updateString = replacedUpdateStrings.remove(0);
+                int size = Integer.parseInt(attrElement.attributeValue("size"));
+                for (int j = 0; j < size; j++){
+                    replacedGuardsPopped.add(guardString.replace(attrElement.attributeValue("allValues"), attrElement.attributeValue("const"+j)));
+                    replacedUpdatesPopped.add(updateString.replace(attrElement.attributeValue("allValues"), attrElement.attributeValue("const"+j)));
+                }
+            }
+            replacedUpdateStrings.addAll(replacedUpdatesPopped);
+            replacedGuardStrings.addAll(replacedGuardsPopped);
+        }
+
+        for (int i = 0; i<replacedGuardStrings.size(); i++){
+
+            Element startToRunElement = new DefaultElement("transition");
+            Element source = new DefaultElement("source").addAttribute("ref", "id" + startStateID);
+            Element target = new DefaultElement("target").addAttribute("ref", "id" + runStateID);
+            startToRunElement.add(source);
+            startToRunElement.add(target);
+
+
+            Element guard = new UPPAALElementWithXY("label")
+                    .addAttribute("kind", "guard")
+                    .addText(replacedGuardStrings.get(i));
+
+            startToRunElement.add(guard);
+
+            Element update = new UPPAALElementWithXY("label")
+                    .addAttribute("kind", "assignment")
+                    .addText(replacedUpdateStrings.get(i));
+
+            startToRunElement.add(update);
+
+
+            // add run rule sync label
+            Element syncLabel = new UPPAALElementWithXY("label").addAttribute("kind", "synchronisation").addText("Run_Rule?");
+            startToRunElement.add(syncLabel);
+
+            startToRuns.add((startToRunElement));
+            //System.out.println("Replaced Guards : " +  replacedGuardStrings.size() + replacedGuardStrings.get(i));
+            //System.out.println("Replaced Updates: " + replacedUpdateStrings.size() +replacedUpdateStrings.get(i));
+
+        }
+
+
+        //getStartToRunTransitionElement(runStateID, startStateID, ctx);
+        return startToRuns;
+    }
     private Element getStartToRunTransitionElement(String runStateID, String startStateID, SoarParser.Soar_productionContext ctx)
     {
+        resetXYPosition();
+        //CJ: start loop
+
         Element startToRun = new DefaultElement("transition");
         Element source = new DefaultElement("source").addAttribute("ref", "id" + startStateID);
         Element target = new DefaultElement("target").addAttribute("ref", "id" + runStateID);
 
         startToRun.add(source);
         startToRun.add(target);
+        for ( SoarParser.Attr_value_testsContext attrTest : ctx.condition_side().state_imp_cond().attr_value_tests()){
+            //if(attrTest.attr_test(0).test().simple_test().disjunction_test() != null) {
+            //System.out.println("(GET START TO RUN ELEMENT) attr val test(): " + attrTest.accept(this));
+            //}
+        }
+        //System.out.println("(getStartTORunElement) cond accept: " + ctx.condition_side().accept(this).getText());
 
-        startToRun.add(ctx.condition_side().accept(this));
+        Element guards = new UPPAALElementWithXY("label")
+                .addAttribute("kind", "guard")
+                .addText(ctx.condition_side().accept(this).getText());
+
+        startToRun.add(guards);
+
+
 
         // add run rule sync label
         Element syncLabel = new UPPAALElementWithXY("label").addAttribute("kind", "synchronisation").addText("Run_Rule?");
         startToRun.add(syncLabel);
 
-        startToRun.add(ctx.action_side().accept(this));
 
-        return startToRun;
+
+        startToRun.add(ctx.action_side().accept(this));
+        //CJ: add to list of start to run elements
+        //CJ: End loop
+
+        return startToRun; //return list of start to run elements
     }
 
     private Element getSystemElement()
@@ -202,13 +374,42 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
         return new UPPAALElementWithXY("name").addText(simplifiedString(text));
     }
 
+    //Function to remove variables with <<>> and replace them with each disjunction having its own variable
+    //Eg. State_<<trackfield>> is expanded to State_track and State_field
+    private void expandDisjunctionStringVariables(SoarParser.Soar_productionContext ctx){
+        List<Element>  attrValueTestWithDisjunctions = getAttrValueTestWithDisjunctions(ctx);
+        List<String> newlyExpandedStrings = new LinkedList<>();
+
+        Iterator<String> iterator = _globals.iterator();
+        while (iterator.hasNext()) {
+            String variable = iterator.next();
+            if (variable.contains("<<")){
+                for (Element avt : attrValueTestWithDisjunctions) {
+                    if (variable.contains(avt.attributeValue("allValues"))){
+                        iterator.remove(); // Safe removal of the element
+
+                        //replace with expanded list of disjunction options
+                        int size = Integer.parseInt(avt.attributeValue("size"));
+                        for (int i = 0; i < size; i++){
+                            newlyExpandedStrings.add(variable.replace(avt.attributeValue("allValues"), avt.attributeValue("const"+i)));
+                        }
+                    }
+                }
+            }
+        }
+
+        _globals.addAll(newlyExpandedStrings);
+
+
+    }
     @Override
     public Element visitSoar(SoarParser.SoarContext ctx)
     {
         ctx.soar_production().forEach(sp -> sp.accept(this));
 
-        final Element nta = new DefaultElement("nta");
+        ctx.soar_production().forEach(this::expandDisjunctionStringVariables);
 
+        final Element nta = new DefaultElement("nta");
         nta.add(getDeclarationElement());
 
         // Add template object for each production
@@ -226,6 +427,7 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
     @Override
     public Element visitSoar_production(SoarParser.Soar_productionContext ctx)
     {
+        resetXYPosition();
         if (ctx.getText().contains("(halt)"))
         {
             _goalProductionContext = ctx;
@@ -251,7 +453,15 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
         productionElement.add(init);
 
         productionElement.add(getTransitionWithText(runStateID, startStateID, "synchronisation", "Run_Rule?"));
-        productionElement.add(getStartToRunTransitionElement(runStateID, startStateID, ctx));
+        //for loop here for attribute disjunctions?
+        //productionElement.add(getStartToRunTransitionElement(runStateID, startStateID, ctx));
+
+        List<Element> transitions = getAllSTartToRunTransitions(runStateID, startStateID, ctx);
+        for (Element transition : transitions) {
+            productionElement.add(transition);
+        }
+
+        //productionElement.addA(getStartToRunTransitionElement(runStateID, startStateID, ctx));
 
         return productionElement;
     }
@@ -270,13 +480,11 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
         List<String> guards = new LinkedList<>();
         guards.add(ctx.state_imp_cond().accept(this).getText());
         guards.addAll(ctx.cond().stream().map(c -> c.accept(this).getText()).collect(Collectors.toList()));
+        Element conditions = new DefaultElement("");
 
-        return new UPPAALElementWithXY("label")
-                .addAttribute("kind", "guard")
-                .addText(guards
-                        .stream()
-                        .filter(g -> !g.equals(""))
-                        .collect(Collectors.joining(" && ")));
+        conditions.addText(guards.stream().filter(g -> !g.equals("")).collect(Collectors.joining(" && ")));
+        return conditions;
+
     }
 
     /**
@@ -291,16 +499,19 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
         String productionName = ((SoarParser.Soar_productionContext) condCtx.parent.parent).sym_constant().getText();
         String idTest = condCtx.id_test().getText();
         Map<String, String> localVariableDictionary = _variableDictionary.get(productionName);
+        System.out.println("\n\nProd name + local dictionary: " + productionName + " " + localVariableDictionary);
 
-        return new DefaultElement("").addText(innerVisitConditionVisit(condCtx.attr_value_tests(), localVariableDictionary, idTest));
+        return new DefaultElement("").addText(innerVisitConditionVisit(condCtx.attr_value_tests(), localVariableDictionary, idTest, false));
     }
 
     /*
-    07/13/2022 Modified implementation for troubleshooting
+    07/5/2024 Added booolean attributeDisjunction parameter to be able to separate between
+     getting the basic guards and those with attribute disjunctions, as all other guards need to be iterated over those
      */
-    private String innerVisitConditionVisit(List<SoarParser.Attr_value_testsContext> attrValueTestsCtxs, Map<String, String> localVariableDictionary, String idTest)
+    private String innerVisitConditionVisit(List<SoarParser.Attr_value_testsContext> attrValueTestsCtxs, Map<String, String> localVariableDictionary, String idTest, boolean attributeDisjunctions)
     {
-        System.out.println("Visiting inner conditions for idTest: " + idTest);
+
+        //System.out.println("\n\nVisiting inner conditions for idTest: " + idTest);
         List<String> stateVariableComparisons = new LinkedList<>();
 
         // Variable in left hand side
@@ -312,8 +523,26 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
             for (SoarParser.Attr_value_testsContext attributeCtx : attrValueTestsCtxs)
             {
                 String attrPath = attributeCtx.attr_test().stream().map(RuleContext::getText).collect(Collectors.joining("_"));
-
+                if (attrPath.contains("{")){
+                    //conjunction of attributes or grouping
+                    if (attributeCtx.attr_test().size() == 1){
+                        SoarParser.Conjunctive_testContext conjCtx= attributeCtx.attr_test(0).test().conjunctive_test();
+                        if ((conjCtx.simple_test().size() == 2) && (conjCtx.simple_test(1).relational_test().relation() == null)) {      //condition for when {} is used to group variables
+                            attrPath = conjCtx.simple_test(0).getText();
+                        }
+                    }
+                }
                 String leftTerm = variablePath + "_" + attrPath;
+
+
+                //Depending on if we are getting basic guards or guards with attribute disjunctions,
+                // continue to next iteration if we come across a basic guard (without"<<") and we are looking for attributeDisjunctions and viceVersa
+                if ((!leftTerm.contains("<<") && attributeDisjunctions) || (leftTerm.contains("<<") && !attributeDisjunctions)){
+                    //Disjunctions of attributes are handled later in getAllStartToRunTransitions
+                    //This way, none disjunction attributes can be duplicated and disjunctions options are added to each transition
+                    continue;
+                }
+
 
                 if (attributeCtx.getText().startsWith("-^"))
                 {
@@ -321,14 +550,43 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
                 }
                 else
                 {
-                    System.out.println("Checking number of values for " + attributeCtx.getText());
-                    int numberOfValues = attributeCtx.value_test().size();
+                    //System.out.println("Checking number of values for " + attributeCtx.getText() + ": " + attributeCtx.value_test(0));
+                    /*
+                    07/21/2022 Conditional logic to identify types of tests on Soar condition-side
+                     */
+                    int numberOfValues;
+                    List <? extends ParserRuleContext> contexts = null;
+                    List <TerminalNode> constants = null;
+                    String logicOperationString = "";
+                    if (attributeCtx.value_test(0).test().conjunctive_test() != null) {
+                        numberOfValues = attributeCtx.value_test(0).test().conjunctive_test().simple_test().size();
+                        contexts = attributeCtx.value_test(0).test().conjunctive_test().simple_test();
+                    } else if (attributeCtx.value_test(0).test().simple_test().disjunction_test() != null) {
+                        numberOfValues = attributeCtx.value_test(0).test().simple_test().disjunction_test().constant().size();
+                        contexts = attributeCtx.value_test(0).test().simple_test().disjunction_test().constant();
+                        logicOperationString = " || ";
+
+                    } else if (attributeCtx.value_test(0).test().multi_value_test() != null) {
+                        numberOfValues = attributeCtx.value_test(0).test().multi_value_test().Int_constant().size();
+                        constants = attributeCtx.value_test(0).test().multi_value_test().Int_constant();
+                    } else {
+                        // There would be a risk of NullPointer here, but numberOfValues will always be 1 within this block
+                        try {
+                            numberOfValues = attributeCtx.value_test().size();
+
+                        } catch (NullPointerException e) {
+                            System.out.println("There is no value test in the current context.");
+                            numberOfValues = 0;
+                        }
+
+                    }
 
                     if (numberOfValues == 1)
                     {
                         Element relationAndRightTerm = attributeCtx.value_test(0).accept(this);
 
                         String relation = relationAndRightTerm.attributeValue("rel");
+                        //System.out.println("(innerVisitConditionVisit) relationAndRightTerm: " + relationAndRightTerm);
                         String rightTerm;
 
                         if (relation.equals("="))
@@ -344,6 +602,7 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
                         {
                             rightTerm = relationAndRightTerm.attributeValue("const");
                         }
+
 
                         if (rightTerm == null)
                         {
@@ -361,11 +620,108 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
                         {
                             stateVariableComparisons.add(simplifiedString(leftTerm) + " " + relation + " " + simplifiedString(rightTerm));
                         }
+                        //CJ: if right term equals left term, then soar is trying to say "if that attribute has been initialized before"
+                        else if (rightTerm.equals(leftTerm)){
+                            stateVariableComparisons.add(simplifiedString(leftTerm) + " != nil");
+                        }
+
                     }
-                    else
+                    /*
+                    07/21/2022 Handles parsing of multi-valued tests, like conjunctive, disjunction, or multi-value
+                     */
+                    else if (contexts != null)
                     {
 
-                        // use "path_to_var[index] = constant" pattern
+                        List<String> conditionComparisons = new LinkedList<>();
+                        for (ParserRuleContext test:contexts) {
+                            Element relationAndRightTerm = test.accept(this);
+                            //return ctx.simple_test(1).accept(this);
+                            //System.out.println("(contexts > 1 innerVisitCond left relation right) "+ leftTerm + " " + relationAndRightTerm);//test.children.get(0).getText());
+                            //System.out.println("This is the current subtest being checked: " + test.getText());
+
+                            String relation = relationAndRightTerm.attributeValue("rel");
+                            String rightTerm;
+
+                            //if(test.accept(this).sim)
+                            if (relation == null || relation.equals("="))
+                            {
+                                relation = "==";
+                            }
+
+                            if (relationAndRightTerm.attribute("var") != null)
+                            {
+                                rightTerm = localVariableDictionary.get(relationAndRightTerm.attributeValue("var"));
+                            }
+                            else
+                            {
+                                rightTerm = relationAndRightTerm.attributeValue("const");
+                            }
+
+                            if (rightTerm == null)
+                            {
+                                break;
+                            }
+                            else if (rightTerm.equals("true") && relation.equals("=="))
+                            {
+                                conditionComparisons.add(simplifiedString(leftTerm));
+                                //stateVariableComparisons.add(simplifiedString(leftTerm));
+                            }
+                            else if (rightTerm.equals("false") && relation.equals("=="))
+                            {
+                                conditionComparisons.add("!"+simplifiedString(leftTerm));
+                                //stateVariableComparisons.add("!"+simplifiedString(leftTerm));
+                            }
+                            else if (!rightTerm.equals(leftTerm))
+                            {
+                                conditionComparisons.add(simplifiedString(leftTerm) + " " + relation + " " + simplifiedString(rightTerm));
+                                //stateVariableComparisons.add(simplifiedString(leftTerm) + " " + relation + " " + simplifiedString(rightTerm));
+                            }
+                        }
+                        String collectedString = conditionComparisons.stream()
+                                .filter(c -> c != null && !c.equals(""))
+                                .collect(Collectors.joining(logicOperationString));
+                        collectedString = "(" + collectedString + ")";
+                        stateVariableComparisons.add(collectedString);
+
+                    } else {
+                        for (TerminalNode constant:constants) {
+                            Element relationAndRightTerm = constant.accept(this);
+                            System.out.println("This is the current constant being checked: " + constant.getText());
+
+                            String relation = relationAndRightTerm.attributeValue("rel");
+                            String rightTerm;
+
+                            if (relation == null || relation.equals("="))
+                            {
+                                relation = "==";
+                            }
+
+                            if (relationAndRightTerm.attribute("var") != null)
+                            {
+                                rightTerm = localVariableDictionary.get(relationAndRightTerm.attributeValue("var"));
+                            }
+                            else
+                            {
+                                rightTerm = relationAndRightTerm.attributeValue("const");
+                            }
+
+                            if (rightTerm == null)
+                            {
+                                break;
+                            }
+                            else if (rightTerm.equals("true") && relation.equals("=="))
+                            {
+                                stateVariableComparisons.add(simplifiedString(leftTerm));
+                            }
+                            else if (rightTerm.equals("false") && relation.equals("=="))
+                            {
+                                stateVariableComparisons.add("!"+simplifiedString(leftTerm));
+                            }
+                            else if (!rightTerm.equals(leftTerm))
+                            {
+                                stateVariableComparisons.add(simplifiedString(leftTerm) + " " + relation + " " + simplifiedString(rightTerm));
+                            }
+                        }
                     }
                 }
             }
@@ -396,7 +752,7 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
         String idTest = ctx.id_test().getText();
         Map<String, String> localVariableDictionary = _variableDictionary.get(productionName);
 
-        return new DefaultElement("").addText(innerVisitConditionVisit(ctx.attr_value_tests(), localVariableDictionary, idTest));
+        return new DefaultElement("").addText(innerVisitConditionVisit(ctx.attr_value_tests(), localVariableDictionary, idTest, false));
     }
 
     @Override
@@ -408,13 +764,17 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
     @Override
     public Element visitAttr_value_tests(SoarParser.Attr_value_testsContext ctx)
     {
-        return null;
+        return ctx.attr_test(0).accept(this);
+        //return ctx.children.get(0).accept(this);
+
     }
 
     @Override
     public Element visitAttr_test(SoarParser.Attr_testContext ctx)
     {
-        return null;
+        //System.out.println("(visitAttr_test)Attr Test ctx: " + ctx.getText());
+        return ctx.children.get(0).accept(this);
+        //return null;
     }
 
     @Override
@@ -432,8 +792,11 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
     @Override
     public Element visitConjunctive_test(SoarParser.Conjunctive_testContext ctx)
     {
-        System.out.println(ctx.children);
-        return ctx.children.get(2).accept(this);
+        System.out.print("These are the subtests of this conjunctive test: ");
+        ctx.simple_test().forEach(t -> System.out.print(t.getText() + " "));
+        System.out.println();
+
+        return ctx.simple_test(0).accept(this);
     }
 
     @Override
@@ -442,16 +805,42 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
         return ctx.children.get(0).accept(this);
     }
 
+    /*
+    07/20/2022 Prep for implementing Multi-value tests
+     */
     @Override
     public Element visitMulti_value_test(SoarParser.Multi_value_testContext ctx)
     {
-        return null;
+        System.out.print("These are the proposed values for attribute " + ctx.getParent().getParent().getText() + ": ");
+        ctx.children.forEach(c -> System.out.print(c.getText() + " "));
+        System.out.println();
+        return null; //ctx.Int_constant(1).accept(this);
     }
 
+    /*
+    07/20/2022 Prep for implementing Disjunction tests
+     */
     @Override
     public Element visitDisjunction_test(SoarParser.Disjunction_testContext ctx)
     {
-        return null;
+        //System.out.print("These are the options for this disjunction: ");
+        //ctx.children.forEach(c -> System.out.print(c.getText() + " "));
+        //System.out.println();
+
+        Element disjunctionsElement = new DefaultElement("").addAttribute("size", String.valueOf(ctx.constant().size()));
+        disjunctionsElement.addAttribute("allValues", simplifiedString(ctx.getText()));
+        int num = 0;
+        //for each constant in the list of disjunction constants
+        for ( SoarParser.ConstantContext constCtx : ctx.constant()){
+            //assign all options for disjunction to the returned element
+            disjunctionsElement.addAttribute( "const"+num, simplifiedString(constCtx.sym_constant().getText()));
+            num += 1;
+        }
+        //ctx.constant().forEach(c -> disjunctions.addAttribute( "const",c.sym_constant().getText()));
+
+        //System.out.println("These are returned disjunction elements: " + disjunctionsElement);
+        return disjunctionsElement;
+
     }
 
     @Override
@@ -486,6 +875,7 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
     @Override
     public Element visitVariable(SoarParser.VariableContext ctx)
     {
+        String var = ctx.getText();
         return new DefaultElement("").addAttribute("var", ctx.getText());
     }
 
@@ -521,25 +911,38 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
         String productionName = ((SoarParser.Soar_productionContext) ctx.parent.parent).sym_constant().getText();
         Map<String, String> localDictionary = _variableDictionary.get(productionName);
         String prefix = localDictionary.get(ctx.variable().getText());
-
         return new DefaultElement("").addText(innerVisitAction(prefix, ctx.attr_value_make()));
     }
 
     private String innerVisitAction(String prefix, List<SoarParser.Attr_value_makeContext> ctxs)
     {
+        String productionName = ((SoarParser.Soar_productionContext) ctxs.get(0).parent.parent.parent).sym_constant().getText();
+        Map<String, String> localDictionary = _variableDictionary.get(productionName);
         Map<String, String[]> stateAssignments = new HashMap<>();
-
         for (SoarParser.Attr_value_makeContext attrCtx : ctxs)
         {
-            String suffix = attrCtx.variable_or_sym_constant()
-                    .stream()
-                    .map(RuleContext::getText)
-                    .collect(Collectors.joining("_"));
+            /*
+            07/21/2022 Modified action-side assignment name generation to better handle variables
+             */
+            String suffix = "";
+            for (SoarParser.Variable_or_sym_constantContext word:attrCtx.variable_or_sym_constant()) {
+                try {
+                    suffix = suffix.concat(localDictionary.get(word.variable().getText()) + "_");
+                } catch (NullPointerException e) {
+                    suffix = suffix.concat(word.sym_constant().getText() + "_");
+                }
+            }
+
+            if (suffix.endsWith("_")) suffix = suffix.substring(0, suffix.length()-1);
 
             String leftSide = prefix + "_" + suffix;
+            //System.out.println("(innerVisitAction) leftside: " + leftSide);
 
             Element rightSideElement = attrCtx.value_make().accept(this);
+            //System.out.println("(innerVisitAction) rightSideElement: "+rightSideElement);
+
             String[] rightSide = determineAssignment(leftSide, rightSideElement, stateAssignments);
+
 
             if (rightSide != null)
             {
@@ -558,38 +961,51 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
             return null;
         }
 
-        String rightSide;
+        String rightSide = null;
         String prefs;
-
-        if (rightSideElement.attributeValue("const") != null)
-        {
-            rightSide = rightSideElement.attributeValue("const");
-        }
-        else if (rightSideElement.attributeValue("expr") != null)
-        {
-            rightSide = rightSideElement.attributeValue("expr");
-        }
-        else
-        {
-            return null;
-        }
-
-        if (rightSideElement.attributeValue("pref") != null)
-        {
-            prefs = rightSideElement.attributeValue("pref");
-        }
-        else
-        {
+        if (rightSideElement.attributeValue("pref") == null){       //CJ: If the action is not an operator proposal, then assignment is fine
+            if (rightSideElement.attributeValue("const") != null)
+            {
+                rightSide = rightSideElement.attributeValue("const");
+            }
+            else if (rightSideElement.attributeValue("expr") != null)
+            {
+                rightSide = rightSideElement.attributeValue("expr");
+            }
+            else
+            {
+                return null;
+            }
             prefs = "+";
         }
+        else
+        {
+            prefs = rightSideElement.attributeValue("pref");
+            if(prefs.contains("-")){    //if the pref field contains a reject, set operator to nil
+                rightSide = "nil";
+            }
+            else if(prefs.contains("+")){
+                rightSide = "1";
+            }
+        }
+
+        //rightSide is equal to left side if an initialization action is encountered,
+        //hence, initialize the variable to its init_value which is a unique initialization identifier
+
+        if(Objects.equals(simplifiedString(leftSide), simplifiedString(rightSide))){
+            rightSide = "init_" + rightSide;
+        }
+
+        /*
+        07/21/2022 Modified to expand rightSide array and include multiple values
+         */
+        //7/18/24 modified again to replace old assignment if the new assignment is not a reject (-) in soar
+        //which means to remove a working memory element from memory.
 
         if (stateAssignments.containsKey(leftSide))
         {
-            String currentPrefs = stateAssignments.get(leftSide)[1];
 
-            String bestPref = getBestPreference(prefs, currentPrefs);
-
-            if (bestPref.equals(prefs))
+            if (!prefs.contains("-"))
             {
                 return new String[]{rightSide, prefs};
             }
@@ -660,7 +1076,7 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
 
             if ("+-/*".contains(ctx.func_name().getText()))
             {
-                result = simplifiedString(leftSide + " " + funcName + " " + rightSide);
+                result = simplifiedString(leftSide) + " " + funcName + " " + simplifiedString(rightSide);
             }
             else
             {
@@ -680,7 +1096,20 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
     @Override
     public Element visitValue(SoarParser.ValueContext ctx)
     {
-        return ctx.children.get(0).accept(this);
+        String productionName = ((SoarParser.Soar_productionContext) ctx.parent.parent.parent.parent.parent).sym_constant().getText();
+        //System.out.println(productionName);
+        Map<String, String> localDictionary = _variableDictionary.get(productionName);
+        Element resultantElement =  ctx.children.get(0).accept(this);
+
+
+        if (resultantElement.attributeValue("var") != null)
+        {
+            String variableToValue = simplifiedString(localDictionary.get(resultantElement.attributeValue("var")));
+
+            resultantElement.addAttribute("const",variableToValue);
+        }
+
+        return resultantElement;
     }
 
     @Override
@@ -703,9 +1132,14 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
         }
     }
 
+
+    /*
+    07/21/2022 Modified to get variable text without special characters (< or >)
+     */
     @Override
     public Element visitVariable_or_sym_constant(SoarParser.Variable_or_sym_constantContext ctx)
     {
+
         return null;
     }
 
@@ -713,6 +1147,7 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
     public Element visitValue_make(SoarParser.Value_makeContext ctx)
     {
         Element resultantElement = ctx.value().accept(this);
+
 
         long preferences = ctx.pref_specifier().size();
 
@@ -725,7 +1160,6 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
 
             resultantElement.addAttribute("pref", concatenatedPreferences);
         }
-
         return resultantElement;
     }
 
