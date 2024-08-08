@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.6//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd'>
+<nta>
+	<declaration>
+int State_operator_cannibals = -9999; 
+int State_desired = -9999; 
+int State_operator_name = -9999; 
+int State_name = -9999; 
+int State_left_bank_missionaries = -9999; 
+int State_left_bank = -9999; 
+int State_operator_types = -9999; 
+int State_right_bank_boat = -9999; 
+int State = -9999; 
+int State_operator_missionaries = -9999; 
+int State_superstate = -9999; 
+int State_desired_right_bank_cannibals = -9999; 
+int State_right_bank = -9999; 
+int State_desired_right_bank = -9999; 
+int State_left_bank_cannibals = -9999; 
+int State_desired_right_bank_missionaries = -9999; 
+int State_right_bank_missionaries = -9999; 
+int State_right_bank_cannibals = -9999; 
+int State_operator = -9999; 
+int State_operator_boat = -9999; 
+int State_desired_right_bank_boat = -9999; 
+int State_operator_bank  = -9999; 
+int State_left_bank_boat = -9999; 
+const int nil = -9999;
+const int initialize_mac = 2; 
+const int operator = 3; 
+const int other_bank = 4; 
+const int bank = 5; 
+const int name = 6; 
+const int left_bank = 7; 
+const int right_bank = 8; 
+const int superstate = 9; 
+const int mac = 10; 
+const int move_mac_boat = 11; 
+const int missionaries = 12; 
+const int boat = 13; 
+const int cannibals = 14; 
+const int init_State_operator_cannibals = 15; 
+const int init_State_desired = 16; 
+const int init_State_right_bank_other_bank = 17; 
+const int init_State_operator_name = 18; 
+const int init_State_right_bank_other_bank_missionaries = 19; 
+const int init_State_left_bank_other_bank_missionaries = 319; 
+const int init_State_name = 20; 
+const int init_State_left_bank_missionaries = 21; 
+const int init_State_left_bank = 22; 
+const int init_State_operator_types = 23; 
+const int init_State_right_bank_boat = 24; 
+const int init_State = 25; 
+const int init_State_operator_missionaries = 26; 
+const int init_State_superstate = 28; 
+const int init_State_desired_right_bank_cannibals = 31; 
+const int init_State_right_bank = 32; 
+const int init_State_desired_right_bank = 34; 
+const int init_State_left_bank_cannibals = 35; 
+const int init_State_right_bank_other_bank_cannibals = 36; 
+const int init_State_left_bank_other_bank_cannibals = 336; 
+const int init_State_desired_right_bank_missionaries = 37; 
+const int init_State_right_bank_missionaries = 38; 
+const int init_State_right_bank_cannibals = 39; 
+const int init_State_right_bank_other_bank_boat = 40; 
+const int init_State_left_bank_other_bank_boat = 340; 
+const int init_State_operator = 41; 
+const int init_State_operator_boat = 42; 
+const int init_State_left_bank_other_bank = 43; 
+const int init_State_desired_right_bank_boat = 44; 
+const int init_State_operator_bank = 45; 
+const int init_State_left_bank_boat = 46; 
+broadcast chan Run_Rule;
+</declaration>
+	<template>
+		<name x="0" y="0">mac_propose_initialize_mac</name>
+		<location id="id0" x="100" y="100">
+			<name x="100" y="100">Run</name>
+		</location>
+		<location id="id1" x="200" y="-100">
+			<name x="200" y="-100">Start</name>
+			<committed/>
+		</location>
+		<init ref="id1"/>
+		<transition id="id2">
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="0" y="0">Run_Rule?</label>
+		</transition>
+		<transition id="id3">
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="guard" x="200" y="-100">State_superstate == nil &amp;&amp; State_name == nil</label>
+			<label kind="synchronisation" x="400" y="100">Run_Rule?</label>
+			<label kind="assignment" x="300" y="0">State_operator = 1, State_operator_name = initialize_mac</label>
+		</transition>
+	</template>
+	<template>
+		<name x="0" y="0">mac_apply_initialize_mac</name>
+		<location id="id4" x="100" y="100">
+			<name x="100" y="100">Run</name>
+		</location>
+		<location id="id5" x="200" y="-100">
+			<name x="200" y="-100">Start</name>
+			<committed/>
+		</location>
+		<init ref="id5"/>
+		<transition id="id6">
+			<source ref="id4"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="0" y="0">Run_Rule?</label>
+		</transition>
+		<transition id="id7">
+			<source ref="id5"/>
+			<target ref="id4"/>
+			<label kind="guard" x="200" y="-100">State_operator_name == initialize_mac</label>
+			<label kind="synchronisation" x="400" y="100">Run_Rule?</label>
+			<label kind="assignment" x="195" y="25">State_name = mac, State_left_bank = init_State_left_bank, State_desired = init_State_desired, State_right_bank = init_State_right_bank, State_left_bank = State_left_bank, State_right_bank_boat = 0, State_right_bank_cannibals = 0, State_right_bank_missionaries = 0, State_left_bank_boat = 1, State_left_bank_missionaries = 3, State_right_bank = State_right_bank, State_left_bank_cannibals = 3, State_desired_right_bank_cannibals = 3, State_desired_right_bank_missionaries = 3, State_desired_right_bank_boat = 1</label>
+		</transition>
+	</template>
+	<template>
+		<name x="0" y="0">mac_propose_operator_move_mac_boat1</name>
+		<location id="id8" x="195" y="102">
+			<name x="195" y="102">Run</name>
+		</location>
+		<location id="id9" x="200" y="-100">
+			<name x="200" y="-100">Start</name>
+			<committed/>
+		</location>
+		<init ref="id9"/>
+		<transition id="id10">
+			<source ref="id8"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="161" y="-8">Run_Rule?</label>
+		</transition>
+		<transition id="id11">
+			<source ref="id9"/>
+			<target ref="id8"/>
+			<label kind="guard" x="51" y="-127">State_name == mac &amp;&amp; State_right_bank != nil &amp;&amp; State_right_bank_boat == 1</label>
+			<label kind="synchronisation" x="51" y="-161">Run_Rule?</label>
+			<label kind="assignment" x="51" y="-144">State_operator = 1, State_operator_boat = 1, State_operator_bank = State_right_bank, State_operator_types = 1, State_operator_name = move_mac_boat</label>
+			<nail x="51" y="-102"/>
+		</transition>
+		<transition id="id12">
+			<source ref="id9"/>
+			<target ref="id8"/>
+			<label kind="guard" x="204" y="119">State_name == mac &amp;&amp; State_left_bank != nil &amp;&amp; State_left_bank_boat == 1</label>
+			<label kind="synchronisation" x="204" y="153">Run_Rule?</label>
+			<label kind="assignment" x="204" y="136">State_operator = 1, State_operator_boat = 1, State_operator_bank = State_left_bank, State_operator_types = 1, State_operator_name = move_mac_boat</label>
+			<nail x="357" y="102"/>
+		</transition>
+	</template>
+	<template>
+		<name x="0" y="0">mac_propose_operator_move_mac_boat2</name>
+		<location id="id13" x="195" y="136">
+			<name x="195" y="136">Run</name>
+		</location>
+		<location id="id14" x="200" y="-100">
+			<name x="200" y="-100">Start</name>
+			<committed/>
+		</location>
+		<init ref="id14"/>
+		<transition id="id15">
+			<source ref="id13"/>
+			<target ref="id14"/>
+			<label kind="synchronisation" x="0" y="0">Run_Rule?</label>
+		</transition>
+		<transition id="id16">
+			<source ref="id14"/>
+			<target ref="id13"/>
+			<label kind="guard" x="25" y="-127">State_name == mac &amp;&amp; State_right_bank != nil &amp;&amp; State_right_bank_cannibals &gt; 1 &amp;&amp; State_right_bank_boat == 1</label>
+			<label kind="synchronisation" x="400" y="100">Run_Rule?</label>
+			<label kind="assignment" x="25" y="-144">State_operator = 1, State_operator_boat = 1, State_operator_bank = State_right_bank, State_operator_cannibals = 2, State_operator_types = 1, State_operator_name = move_mac_boat</label>
+			<nail x="17" y="-102"/>
+		</transition>
+		<transition id="id17">
+			<source ref="id14"/>
+			<target ref="id13"/>
+			<label kind="guard" x="187" y="153">State_name == mac &amp;&amp; State_right_bank != nil &amp;&amp; State_right_bank_missionaries &gt; 1 &amp;&amp; State_right_bank_boat == 1</label>
+			<label kind="synchronisation" x="700" y="100">Run_Rule?</label>
+			<label kind="assignment" x="187" y="178">State_operator = 1, State_operator_boat = 1, State_operator_bank = State_right_bank, State_operator_missionaries = 2, State_operator_types = 1, State_operator_name = move_mac_boat</label>
+			<nail x="399" y="136"/>
+		</transition>
+		<transition id="id18">
+			<source ref="id14"/>
+			<target ref="id13"/>
+			<label kind="guard" x="800" y="-100">State_name == mac &amp;&amp; State_left_bank != nil &amp;&amp; State_left_bank_cannibals &gt; 1 &amp;&amp; State_left_bank_boat == 1</label>
+			<label kind="synchronisation" x="1000" y="100">Run_Rule?</label>
+			<label kind="assignment" x="900" y="0">State_operator = 1, State_operator_boat = 1, State_operator_bank = State_left_bank, State_operator_cannibals = 2, State_operator_types = 1, State_operator_name = move_mac_boat</label>
+			<nail x="144" y="25"/>
+		</transition>
+		<transition id="id19">
+			<source ref="id14"/>
+			<target ref="id13"/>
+			<label kind="guard" x="1100" y="-100">State_name == mac &amp;&amp; State_left_bank != nil &amp;&amp; State_left_bank_missionaries &gt; 1 &amp;&amp; State_left_bank_boat == 1</label>
+			<label kind="synchronisation" x="1300" y="100">Run_Rule?</label>
+			<label kind="assignment" x="1200" y="0">State_operator = 1, State_operator_boat = 1, State_operator_bank = State_left_bank, State_operator_missionaries = 2, State_operator_types = 1, State_operator_name = move_mac_boat</label>
+		</transition>
+	</template>
+	<template>
+		<name x="0" y="0">mac_propose_operator_move_mac_boat11</name>
+		<location id="id20" x="100" y="100">
+			<name x="100" y="100">Run</name>
+		</location>
+		<location id="id21" x="200" y="-100">
+			<name x="200" y="-100">Start</name>
+			<committed/>
+		</location>
+		<init ref="id21"/>
+		<transition id="id22">
+			<source ref="id20"/>
+			<target ref="id21"/>
+			<label kind="synchronisation" x="0" y="0">Run_Rule?</label>
+		</transition>
+		<transition id="id23">
+			<source ref="id21"/>
+			<target ref="id20"/>
+			<label kind="guard" x="200" y="-100">State_name == mac &amp;&amp; State_right_bank != nil &amp;&amp; State_right_bank_missionaries &gt; 0 &amp;&amp; State_right_bank_cannibals &gt; 0 &amp;&amp; State_right_bank_boat == 1</label>
+			<label kind="synchronisation" x="400" y="100">Run_Rule?</label>
+			<label kind="assignment" x="263" y="-42">State_operator = 1, State_operator_cannibals = 1, State_operator_boat = 1, State_operator_bank = State_right_bank, State_operator_missionaries = 1, State_operator_types = 2, State_operator_name = move_mac_boat</label>
+		</transition>
+		<transition id="id24">
+			<source ref="id21"/>
+			<target ref="id20"/>
+			<label kind="guard" x="500" y="-100">State_name == mac &amp;&amp; State_left_bank != nil &amp;&amp; State_left_bank_missionaries &gt; 0 &amp;&amp; State_left_bank_cannibals &gt; 0 &amp;&amp; State_left_bank_boat == 1</label>
+			<label kind="synchronisation" x="700" y="100">Run_Rule?</label>
+			<label kind="assignment" x="600" y="0">State_operator = 1, State_operator_cannibals = 1, State_operator_boat = 1, State_operator_bank = State_left_bank, State_operator_missionaries = 1, State_operator_types = 2, State_operator_name = move_mac_boat</label>
+		</transition>
+	</template>
+	<template>
+		<name x="0" y="0">apply_move_mac_boat_cannibals</name>
+		<location id="id25" x="195" y="136">
+			<name x="195" y="136">Run</name>
+		</location>
+		<location id="id26" x="200" y="-100">
+			<name x="200" y="-100">Start</name>
+			<committed/>
+		</location>
+		<init ref="id26"/>
+		<transition id="id27">
+			<source ref="id26"/>
+			<target ref="id25"/>
+			<label kind="guard" x="195" y="153">State_operator != nil &amp;&amp; State_operator_name == move_mac_boat &amp;&amp; State_operator_cannibals != nil &amp;&amp; State_left_bank != nil &amp;&amp; State_left_bank_cannibals != nil &amp;&amp; State_right_bank != nil &amp;&amp; State_right_bank_cannibals != nil</label>
+			<label kind="synchronisation" x="212" y="187">Run_Rule?</label>
+			<label kind="assignment" x="204" y="170">State_left_bank_cannibals = State_left_bank_cannibals - State_operator_cannibals, State_right_bank_cannibals = State_right_bank_cannibals + State_operator_cannibals</label>
+			<nail x="357" y="136"/>
+		</transition>
+		<transition id="id28">
+			<source ref="id25"/>
+			<target ref="id26"/>
+			<label kind="synchronisation" x="161" y="17">Run_Rule?</label>
+		</transition>
+		<transition id="id29">
+			<source ref="id26"/>
+			<target ref="id25"/>
+			<label kind="guard" x="34" y="-127">State_operator != nil &amp;&amp; State_operator_name == move_mac_boat &amp;&amp; State_operator_cannibals != nil &amp;&amp; State_right_bank != nil &amp;&amp; State_right_bank_cannibals != nil &amp;&amp; State_left_bank != nil &amp;&amp; State_left_bank_cannibals != nil</label>
+			<label kind="synchronisation" x="34" y="-161">Run_Rule?</label>
+			<label kind="assignment" x="34" y="-144">State_right_bank_cannibals = State_right_bank_cannibals - State_operator_cannibals, State_left_bank_cannibals = State_left_bank_cannibals + State_operator_cannibals</label>
+			<nail x="34" y="-102"/>
+		</transition>
+	</template>
+	<template>
+		<name x="0" y="0">apply_move_mac_boat_missionaries</name>
+		<location id="id30" x="195" y="144">
+			<name x="195" y="144">Run</name>
+		</location>
+		<location id="id31" x="200" y="-100">
+			<name x="200" y="-100">Start</name>
+			<committed/>
+		</location>
+		<init ref="id31"/>
+		<transition id="id32">
+			<source ref="id31"/>
+			<target ref="id30"/>
+			<label kind="guard" x="195" y="170">State_operator != nil &amp;&amp; State_operator_name == move_mac_boat &amp;&amp; State_operator_missionaries != nil &amp;&amp; State_left_bank != nil &amp;&amp; State_left_bank_missionaries != nil &amp;&amp; State_right_bank != nil &amp;&amp; State_right_bank_missionaries != nil</label>
+			<label kind="synchronisation" x="195" y="221">Run_Rule?</label>
+			<label kind="assignment" x="195" y="195">State_left_bank_missionaries = State_left_bank_missionaries - State_operator_missionaries, State_right_bank_missionaries = State_right_bank_missionaries + State_operator_missionaries</label>
+			<nail x="357" y="153"/>
+		</transition>
+		<transition id="id33">
+			<source ref="id30"/>
+			<target ref="id31"/>
+			<label kind="synchronisation" x="34" y="-170">Run_Rule?</label>
+			<nail x="34" y="-102"/>
+		</transition>
+		<transition id="id34">
+			<source ref="id31"/>
+			<target ref="id30"/>
+			<label kind="guard" x="34" y="-136">State_operator != nil &amp;&amp; State_operator_name == move_mac_boat &amp;&amp; State_operator_missionaries != nil &amp;&amp; State_right_bank != nil &amp;&amp; State_right_bank_missionaries != nil &amp;&amp; State_left_bank != nil &amp;&amp; State_left_bank_missionaries != nil</label>
+			<label kind="synchronisation" x="161" y="25">Run_Rule?</label>
+			<label kind="assignment" x="34" y="-153">State_right_bank_missionaries = State_right_bank_missionaries - State_operator_missionaries, State_left_bank_missionaries = State_left_bank_missionaries + State_operator_missionaries</label>
+		</transition>
+	</template>
+	<template>
+		<name x="0" y="0">apply_move_mac_boat_boat</name>
+		<location id="id35" x="195" y="144">
+			<name x="195" y="144">Run</name>
+		</location>
+		<location id="id36" x="200" y="-100">
+			<name x="200" y="-100">Start</name>
+			<committed/>
+		</location>
+		<init ref="id36"/>
+		<transition id="id37">
+			<source ref="id36"/>
+			<target ref="id35"/>
+			<label kind="guard" x="195" y="170">State_operator != nil &amp;&amp; State_operator_name == move_mac_boat &amp;&amp; State_operator_boat != nil &amp;&amp; State_left_bank != nil &amp;&amp; State_left_bank_boat != nil &amp;&amp; State_right_bank != nil &amp;&amp; State_right_bank_boat != nil</label>
+			<label kind="synchronisation" x="195" y="221">Run_Rule?</label>
+			<label kind="assignment" x="195" y="195">State_left_bank_boat = State_left_bank_boat - State_operator_boat, State_right_bank_boat = State_right_bank_boat + State_operator_boat</label>
+			<nail x="357" y="144"/>
+			<nail x="357" y="144"/>
+		</transition>
+		<transition id="id38">
+			<source ref="id35"/>
+			<target ref="id36"/>
+			<label kind="synchronisation" x="51" y="-161">Run_Rule?</label>
+			<nail x="51" y="-102"/>
+		</transition>
+		<transition id="id39">
+			<source ref="id36"/>
+			<target ref="id35"/>
+			<label kind="guard" x="51" y="-127">State_operator != nil &amp;&amp; State_operator_name == move_mac_boat &amp;&amp; State_operator_boat != nil &amp;&amp; State_right_bank != nil &amp;&amp; State_right_bank_boat != nil &amp;&amp; State_left_bank != nil &amp;&amp; State_left_bank_boat != nil</label>
+			<label kind="synchronisation" x="153" y="8">Run_Rule?</label>
+			<label kind="assignment" x="51" y="-144">State_right_bank_boat = State_right_bank_boat - State_operator_boat, State_left_bank_boat = State_left_bank_boat + State_operator_boat</label>
+		</transition>
+	</template>
+	<template>
+		<name x="0" y="0">mac_detect_state_success</name>
+		<location id="id40" x="100" y="100">
+			<name x="100" y="100">Run</name>
+		</location>
+		<location id="id41" x="200" y="-100">
+			<name x="200" y="-100">Start</name>
+			<committed/>
+		</location>
+		<init ref="id41"/>
+		<transition id="id42">
+			<source ref="id40"/>
+			<target ref="id41"/>
+			<label kind="synchronisation" x="0" y="0">Run_Rule?</label>
+		</transition>
+		<transition id="id43">
+			<source ref="id41"/>
+			<target ref="id40"/>
+			<label kind="guard" x="200" y="-100">State_right_bank_cannibals == 3 &amp;&amp; State_right_bank_missionaries == 3</label>
+			<label kind="synchronisation" x="400" y="100">Run_Rule?</label>
+		</transition>
+	</template>
+	<template>
+		<name>scheduler</name>
+		<location id="id44" x="0" y="0">
+			<name x="0" y="0">Check</name>
+		</location>
+		<location id="id45" x="100" y="100">
+			<name x="100" y="100">Run</name>
+			<committed/>
+		</location>
+		<location id="id46" x="200" y="-100">
+			<name x="200" y="-100">Start</name>
+		</location>
+		<init ref="id46"/>
+		<transition id="id47">
+			<source ref="id44"/>
+			<target ref="id45"/>
+			<label kind="synchronisation" x="0" y="0">Run_Rule!</label>
+		</transition>
+		<transition id="id48">
+			<source ref="id45"/>
+			<target ref="id44"/>
+			<label kind="guard" x="0" y="0">!(State_right_bank_cannibals == 3 &amp;&amp; State_right_bank_missionaries == 3)</label>
+		</transition>
+		<transition id="id49">
+			<source ref="id46"/>
+			<target ref="id45"/>
+			<label kind="synchronisation" x="0" y="0">Run_Rule!</label>
+		</transition>
+	</template>
+	<system>
+apply_move_mac_boat_boat_0 = apply_move_mac_boat_boat(); 
+mac_detect_state_success_0 = mac_detect_state_success(); 
+mac_propose_operator_move_mac_boat11_0 = mac_propose_operator_move_mac_boat11(); 
+mac_propose_operator_move_mac_boat1_0 = mac_propose_operator_move_mac_boat1(); 
+mac_propose_operator_move_mac_boat2_0 = mac_propose_operator_move_mac_boat2(); 
+mac_apply_initialize_mac_0 = mac_apply_initialize_mac(); 
+apply_move_mac_boat_missionaries_0 = apply_move_mac_boat_missionaries(); 
+mac_propose_initialize_mac_0 = mac_propose_initialize_mac(); 
+apply_move_mac_boat_cannibals_0 = apply_move_mac_boat_cannibals(); 
+schd = scheduler();
+goal = mac_detect_state_success(); 
+system apply_move_mac_boat_boat_0, mac_detect_state_success_0, mac_propose_operator_move_mac_boat11_0, mac_propose_operator_move_mac_boat1_0, mac_propose_operator_move_mac_boat2_0, mac_apply_initialize_mac_0, apply_move_mac_boat_missionaries_0, mac_propose_initialize_mac_0, apply_move_mac_boat_cannibals_0, goal, schd;</system>
+	<queries>
+		<query>
+			<formula/>
+			<comment/>
+		</query>
+	</queries>
+</nta>

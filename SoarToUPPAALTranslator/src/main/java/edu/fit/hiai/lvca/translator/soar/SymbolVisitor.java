@@ -29,18 +29,13 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
 
     public SymbolVisitor(SoarParser.SoarContext ctx)
     {
+        System.out.println("---------------------------------------------------------------------------------------");
+        System.out.println("Running symbol visitor to get working memory tree, variables to constants");
+        System.out.println("---------------------------------------------------------------------------------------");
+
         ctx.soar_production().forEach(sp -> sp.accept(this));
-        //stringSymbols.addAll(workingMemoryTree.getAllPaths());
 
         workingMemoryStructure.forEach((prod_name,wmt) -> stringSymbols.addAll(wmt.getAllPaths()));
-
-        //System.err.println("(SymbolVisitor) workingMemory tree: " + workingMemoryTree.getAllPaths());
-
-        //booleanSymbols = booleanSymbols
-        //        .stream()
-        //       .map(attr -> workingMemoryTree.pathTo(attr))
-        //        .collect(Collectors.toSet());
-
 
         HashSet<String> booleanPaths = new HashSet<>();
         booleanSymbols.forEach(attr -> {
@@ -87,8 +82,8 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
     @Override
     public edu.fit.hiai.lvca.translator.soar.SymbolTree visitSoar(SoarParser.SoarContext ctx)
     {
+
         ctx.soar_production().forEach(p -> p.accept(this));
-        //return workingMemoryTree;
 
         //CJ: not sure what this return is for as it is not reached when debugging with breakpoints on this line
         return currentWorkingMemoryTree;
@@ -99,8 +94,12 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
     {
         currentVariableDictionary = new HashMap<>();
         currentWorkingMemoryTree = getTree(ctx);
+        System.out.println("Symbol visiting production name " + ctx.sym_constant().getText());
 
+        System.out.println("    Symbol visiting condition side");
         ctx.condition_side().accept(this);
+
+        System.out.println("    Symbol visiting action side");
         ctx.action_side().accept(this);
 
         // globalVariableDictionary: production name -> variable id -> variable path
@@ -114,7 +113,6 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
                 variablePaths.put(varToValue.getKey(), (varToValue.getValue()));
             }
             else{
-                //variablePaths.put(entry.getKey(), workingMemoryTree.pathTo(entry.getValue()));
                 variablePaths.put(varToValue.getKey(), currentWorkingMemoryTree.pathTo(varToValue));
 
             }
@@ -135,10 +133,10 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
     @Override
     public edu.fit.hiai.lvca.translator.soar.SymbolTree visitState_imp_cond(SoarParser.State_imp_condContext ctx)
     {
+        //add current state variable to variable dictionary, eg <s> -> "State"
         currentVariableDictionary.put(ctx.id_test().getText(), currentWorkingMemoryTree.name);
-        //currentVariableDictionary.put(ctx.id_test().getText(), workingMemoryTree.name);
 
-        //ctx.attr_value_tests().forEach(avt -> workingMemoryTree.addChild(avt.accept(this)));
+        //add subsequent attribute value tests to the working memory tree of this rule
         ctx.attr_value_tests().forEach(avt -> currentWorkingMemoryTree.addChild(avt.accept(this)));
 
         return null;
@@ -169,7 +167,7 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
             edu.fit.hiai.lvca.translator.soar.SymbolTree avtTree = avt.accept(this);
 
             //if a single value or disjunction, then value is used to validate that the right
-            // avtTree is gotten(in a case where multiple avts have the same name) symbolTree.pathTo(Hashmap entry)
+            // avtTree is gotten (in a case where multiple avts have the same name) symbolTree.pathTo(Hashmap entry)
             if(avt.value_test().get(0).test().conjunctive_test() == null){
                 avtTree.value = avt.value_test().get(0).getText();
             }
@@ -188,8 +186,7 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
     @Override
     public edu.fit.hiai.lvca.translator.soar.SymbolTree visitAttr_value_tests(SoarParser.Attr_value_testsContext ctx)
     {
-
-        //CJ: decompose attribute disjunctions here?
+        System.out.println("        Symbol visiting avt " + ctx.getText());
         edu.fit.hiai.lvca.translator.soar.SymbolTree subtree = getTreeFromList(ctx.attr_test());
 
         nestedVariableName = null;
@@ -198,9 +195,7 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
 
         if (nestedVariableName != null && !currentVariableDictionary.containsKey(nestedVariableName))
         {
-            System.out.println("(visitAttr_value) before: currentVariableDictionary: " + currentVariableDictionary);
             currentVariableDictionary.put(nestedVariableName, getFirstLeaf(subtree));
-            System.out.println("(visitAttr_value) after: currentVariableDictionary: " + currentVariableDictionary);
         }
 
         if (ctx.value_test().size() > 0 &&
@@ -234,11 +229,11 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
                 SoarParser.Attr_testContext attrTestCtx = (SoarParser.Attr_testContext) ctxs.get(0);
                 SoarParser.Conjunctive_testContext conjCtx = attrTestCtx.test().conjunctive_test();
                 if ((conjCtx.simple_test().size() == 2) && (conjCtx.simple_test(1).relational_test().relation() == null)) {      //condition for when {} is used to group variables
-                    System.out.println("Grouping occurs: " + conjCtx.getText());
                     if (conjCtx.simple_test(0).getText() != null ){
-                        contextText =  conjCtx.simple_test(0).getText();        //values for the group
+
+                        contextText =  conjCtx.simple_test(0).getText();        //assign values for the group to contextText
+                        System.out.println("        Grouping of " + contextText + " to variable " + conjCtx.simple_test(1).getText());
                         groupingVariableNames.add(conjCtx.simple_test(1).getText());    //recognize that this variable is only used for grouping
-                        //currentVariableDictionary.put(conjCtx.simple_test(1).getText(), contextText);
                     }
 
                 }
@@ -284,7 +279,6 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
     {
 
         if (ctx.getText().startsWith("{") && ctx.getText().endsWith("}")) {
-            System.out.println("(VisitTest) conjunction here: " + ctx.getText());
             return ctx.conjunctive_test().accept(this);
         }else if (ctx.getText().startsWith("<<") && ctx.getText().endsWith(">>")) {
             return ctx.simple_test().disjunction_test().accept(this);
@@ -324,18 +318,7 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
      */
     @Override
     public edu.fit.hiai.lvca.translator.soar.SymbolTree visitConjunctive_test(SoarParser.Conjunctive_testContext ctx) {
-        System.out.println("This is the conjunctive test context: " + ctx.getText());
 
-       /* if ((ctx.simple_test().size() == 2) && (ctx.simple_test(1).relational_test().relation() == null)){      //condition for when {} is used to group variables
-            System.out.println("Grouping occurs: " + ctx.getText());
-            String result = ctx.simple_test(0).getText();
-
-            stringSymbols.add(ctx.simple_test(0).getText());
-            System.out.println("String symbols " + stringSymbols);
-            return new SymbolTree(result);
-        }else {
-
-        }*/
         ctx.simple_test().forEach(this::visitSimple_test);
         return null;
 
@@ -346,7 +329,6 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
      */
     @Override
     public edu.fit.hiai.lvca.translator.soar.SymbolTree visitDisjunction_test(SoarParser.Disjunction_testContext ctx) {
-        System.out.println("This is the disjunction test context: " + ctx.getText());
         ctx.constant().forEach(c -> c.accept(this));
         return null;
     }
@@ -357,7 +339,6 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
 
     @Override
     public edu.fit.hiai.lvca.translator.soar.SymbolTree visitMulti_value_test(SoarParser.Multi_value_testContext ctx) {
-        System.out.println("This is the multi-value context: " + ctx.getText());
         ctx.Int_constant().forEach(c -> c.accept(this));
         return null;
     }
@@ -414,7 +395,7 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
         if (ctx.attr_value_make() != null && ctx.variable() != null)
         {
             edu.fit.hiai.lvca.translator.soar.SymbolTree attachPoint = ctx.variable().accept(this);
-
+            System.out.println("        Action attach point is at " + attachPoint.name);
             ctx.attr_value_make().forEach(avm ->{
                 edu.fit.hiai.lvca.translator.soar.SymbolTree avmTree = avm.accept(this);
                 avmTree.value = avm.value_make().value().getText();
@@ -428,14 +409,11 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
     public edu.fit.hiai.lvca.translator.soar.SymbolTree visitValue(SoarParser.ValueContext ctx)
     {
         ParseTree node = ctx.children.get(0);
-        //System.out.println("(Visit Value)CTX: "+ ctx.children.get(0).getText());
 
 
         if (node instanceof SoarParser.VariableContext)
         {
             nestedVariableName = node.getText();
-            System.out.println("(visitValue) nestedVariableName: " + nestedVariableName);
-
             return null;
         }
         else
@@ -448,7 +426,6 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
     public edu.fit.hiai.lvca.translator.soar.SymbolTree visitAttr_value_make(SoarParser.Attr_value_makeContext ctx)
     {
         edu.fit.hiai.lvca.translator.soar.SymbolTree subtree = getTreeFromList(ctx.variable_or_sym_constant());
-        System.out.println("Sub: "+ ctx.value_make().getText());
         nestedVariableName = null;
         edu.fit.hiai.lvca.translator.soar.SymbolTree rightHandTree = ctx.value_make().accept(this);
 

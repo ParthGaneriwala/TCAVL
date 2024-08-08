@@ -34,7 +34,6 @@ public class SymbolTree
         else{
             children.forEach(c -> {
                 if (c.name.equals(childTree.name)){
-                    //c.children.addAll(childTree.children);
                     childTree.children.forEach(ctc -> c.addChild(ctc));
                 }
 
@@ -117,6 +116,7 @@ public class SymbolTree
     String pathTo (HashMap.Entry<String, String> entry)
     {
         if(value != null){
+            //if the value check exists, perform a value check to ensure we are at the right node
             if ((name.equals(entry.getValue())) && (value.equals(entry.getKey())))
             {
                 return name;
@@ -159,7 +159,8 @@ public class SymbolTree
         else
         {
             List<String> names = new LinkedList<>();
-            //Added "names.add(name)"to also get intermediate paths like state and state_operator, even thought they are not leaves in the tree
+            //Added "names.add(name)"to also get intermediate paths like state and state_operator,
+            // even thought they are not leaves in the tree
             names.add(name);
 
             for (SymbolTree child : children)

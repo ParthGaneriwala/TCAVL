@@ -101,8 +101,7 @@ public class SoarTranslator
 
         edu.fit.hiai.lvca.translator.soar.UPPAALCreator uppaalCreator = new edu.fit.hiai.lvca.translator.soar.UPPAALCreator(stringAttributeNames, soarParseTree.soar(), variablesPerProductionContext, boolAttributeNames);
         return uppaalCreator.getXML();
-//        soarParseTree.soar().accept(new UPPAALSemanticVisitor(stringAttributeNames, variablesPerProductionContext, boolAttributeNames));
-//        return "";
+
     }
 
     private static String getFileFromDialog(String title)
