@@ -10,6 +10,7 @@ import java.util.*;
 public class SymbolTree
 {
     final String name;
+    String value;
     private final List<SymbolTree> children;
 
     SymbolTree(String name)
@@ -29,6 +30,15 @@ public class SymbolTree
         {
             children.add(childTree);
         }
+        //else merge the children into the existing tree, at the point where their names do equal
+        else{
+            children.forEach(c -> {
+                if (c.name.equals(childTree.name)){
+                    childTree.children.forEach(ctc -> c.addChild(ctc));
+                }
+
+            });
+        }
 
     }
 
@@ -44,7 +54,7 @@ public class SymbolTree
 
         if (result == null)
         {
-            throw new NoSuchElementException("Element not in tree");
+            throw new NoSuchElementException("Element "+ treeName + " not in tree");
         }
         return result;
     }
@@ -59,9 +69,10 @@ public class SymbolTree
         {
             for (SymbolTree child : children)
             {
-                if (child.getSubtree0(treeName) != null)
+                SymbolTree subtree = child.getSubtree0(treeName);
+                if (subtree != null)
                 {
-                    return child;
+                    return subtree;
                 }
             }
         }
@@ -96,6 +107,44 @@ public class SymbolTree
             return null;
         }
     }
+    /**
+     * Give a underscore delimited string of parents to the child of the given name that also matches the given value
+     * TODO return a list
+     * @param entry
+     * @return
+     */
+    String pathTo (HashMap.Entry<String, String> entry)
+    {
+        if(value != null){
+            //if the value check exists, perform a value check to ensure we are at the right node
+            if ((name.equals(entry.getValue())) && (value.equals(entry.getKey())))
+            {
+                return name;
+            }
+        }
+        else{
+            if (name.equals(entry.getValue()))
+            {
+                return name;
+            }
+        }
+
+
+        String suffix = children.stream()
+                .map(child -> child.pathTo(entry))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
+
+        if (suffix != null)
+        {
+            return name + "_" + suffix;
+        }
+        else
+        {
+            return null;
+        }
+    }
 
     /**
      * Return a list of all paths from the root node to a leaf node, delimited by underscores
@@ -110,6 +159,9 @@ public class SymbolTree
         else
         {
             List<String> names = new LinkedList<>();
+            //Added "names.add(name)"to also get intermediate paths like state and state_operator,
+            // even thought they are not leaves in the tree
+            names.add(name);
 
             for (SymbolTree child : children)
             {

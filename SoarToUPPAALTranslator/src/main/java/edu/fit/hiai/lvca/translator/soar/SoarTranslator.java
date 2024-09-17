@@ -86,7 +86,7 @@ public class SoarTranslator
     {
         SoarParser soarParseTree = new SoarParser(new CommonTokenStream(new SoarLexer(new ANTLRFileStream(soarSourceFile))));
 
-        SymbolVisitor symbolVisitor = new SymbolVisitor(soarParseTree.soar());
+        edu.fit.hiai.lvca.translator.soar.SymbolVisitor symbolVisitor = new edu.fit.hiai.lvca.translator.soar.SymbolVisitor(soarParseTree.soar());
         Set<String> stringAttributeNames = symbolVisitor.getStringSymbols();
         Set<String> boolAttributeNames = symbolVisitor.getBooleanSymbols();
 
@@ -99,10 +99,9 @@ public class SoarTranslator
                 .map(name -> name.replace("-", "_"))
                 .collect(Collectors.toSet());
 
-        UPPAALCreator uppaalCreator = new UPPAALCreator(stringAttributeNames, soarParseTree.soar(), variablesPerProductionContext, boolAttributeNames);
+        edu.fit.hiai.lvca.translator.soar.UPPAALCreator uppaalCreator = new edu.fit.hiai.lvca.translator.soar.UPPAALCreator(stringAttributeNames, soarParseTree.soar(), variablesPerProductionContext, boolAttributeNames);
         return uppaalCreator.getXML();
-//        soarParseTree.soar().accept(new UPPAALSemanticVisitor(stringAttributeNames, variablesPerProductionContext, boolAttributeNames));
-//        return "";
+
     }
 
     private static String getFileFromDialog(String title)
