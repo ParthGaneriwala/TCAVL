@@ -1,0 +1,34 @@
+sp {propose*initialize*alternatives
+   (state <s> ^superstate nil
+             -^name)
+-->
+   (<s> ^operator <o> +)
+   (<o> ^name choices)
+}
+
+sp {apply*initialize*alternatives
+   (state <s> ^operator.name choices)
+-->
+   (<s> ^name alternatives
+		^choice ball
+		^choice cone
+		^choice square)
+}
+
+sp {propose*make-choice*ball-or-square
+   (state <s> ^name alternatives
+			  ^choice {<val> << ball square >>})
+-->
+   (<s> ^operator <o> + =)
+   (<o> ^name choose
+		^option <val>)
+}
+
+sp {apply*make-choice*ball-or-square
+   (state <s> ^operator <o>)
+   (<o> ^name choose
+		^option <val>)
+-->
+   (write (crlf) |The choice made was: | <val>)
+   (halt)
+}

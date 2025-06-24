@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="7dfef061-ae1e-4c2f-91a7-f226baa34d7c" name="Changes" comment="test test">
+      <change afterPath="$PROJECT_DIR$/.gitattributes" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/TCAVL.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/checkstyle-idea.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/dep.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/Soar_Counter_Agent.pdf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/alternatives-test.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/blocks-world-RL/blocks-world-RL.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/blocks-world-RL/blocks-world-RL.vsa" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/blocks-world-RL/blocks-world-RL/_firstload.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/blocks-world-RL/blocks-world-RL/_readme.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/blocks-world-RL/blocks-world-RL/all/all_source.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/blocks-world-RL/blocks-world-RL/blocks-world-RL.dm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/blocks-world-RL/blocks-world-RL/blocks-world-RL_source.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/blocks-world-RL/blocks-world-RL/comment.dm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/blocks-world-RL/blocks-world-RL/elaborations/RL-selection-knowledge.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/blocks-world-RL/blocks-world-RL/elaborations/clear.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/blocks-world-RL/blocks-world-RL/elaborations/elaborations_source.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/blocks-world-RL/blocks-world-RL/elaborations/in-place.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/blocks-world-RL/blocks-world-RL/elaborations/monitor.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/blocks-world-RL/blocks-world-RL/elaborations/reward.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/blocks-world-RL/blocks-world-RL/initialize-blocks-world.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/blocks-world-RL/blocks-world-RL/move-block.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/blocks-world-RL/blocks_world_combined.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/counter/counter.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/counter/counter.vsa" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/counter/counter/_firstload.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/counter/counter/all/all_source.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/counter/counter/combined_increment.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/counter/counter/comment.dm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/counter/counter/counter.dm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/counter/counter/counter_source.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/counter/counter/elaborations/_all.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/counter/counter/elaborations/elaborations_source.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/counter/counter/elaborations/goal-test.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/counter/counter/elaborations/monitoring.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/counter/counter/elaborations/top-state.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/counter/counter/increment.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/counter/counter/initialize-counter.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/multi-attribute-test.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/multi-condition-test.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/multi-value-test.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/pilot/pilot.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/pilot/pilot.vsa" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/pilot/pilot/_firstload.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/pilot/pilot/all/all_source.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/pilot/pilot/comment.dm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/pilot/pilot/elaborations/elaborations_source.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/pilot/pilot/elaborations/fuel-check.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/pilot/pilot/elaborations/goal-reached.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/pilot/pilot/elaborations/waypoint-reached.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/pilot/pilot/file.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/pilot/pilot/initialize-pilot.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/pilot/pilot/land.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/pilot/pilot/launch.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/pilot/pilot/navigate-to-waypoint.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/pilot/pilot/navigate.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/pilot/pilot/pilot.dm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/pilot/pilot/pilot_source.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/pilot/pilot/plan.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/pilot/pilot/refuel.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/pilot_agent_combined.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/water-jug-rl/water-jug-rl.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/water-jug-rl/water-jug-rl.vsa" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/water-jug-rl/water-jug-rl/_firstload.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/water-jug-rl/water-jug-rl/_readme.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/water-jug-rl/water-jug-rl/all/all_source.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/water-jug-rl/water-jug-rl/comment.dm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/water-jug-rl/water-jug-rl/elaborations/elaborations_source.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/water-jug-rl/water-jug-rl/elaborations/empty.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/water-jug-rl/water-jug-rl/elaborations/goal-test.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/water-jug-rl/water-jug-rl/elaborations/monitor.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/water-jug-rl/water-jug-rl/empty.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/water-jug-rl/water-jug-rl/fill.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/water-jug-rl/water-jug-rl/initialize-water-jug.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/water-jug-rl/water-jug-rl/pour.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/water-jug-rl/water-jug-rl/record.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/water-jug-rl/water-jug-rl/water-jug-rl.dm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/water-jug-rl/water-jug-rl/water-jug-rl_source.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/water-jug-rl/water-jug-rl/water-jug.dm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/water-jug-rl/water-jug-rl/water-jug_source.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Soar Examples/xplane_copilot.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/.classpath" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/.project" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/dep/antlr4-4.10.1.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/dep/antlr4-runtime-4.10.1.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/dep/commons-cli-1.5.0.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/dep/dom4j-1.6.1.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/dep/model.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/Soar.interp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/Soar.tokens" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarBaseListener.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarBaseVisitor.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarLexer.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarLexer.interp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarLexer.tokens" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarListener.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$ActionContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$Action_sideContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$Attr_testContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$Attr_value_makeContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$Attr_value_testsContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$CondContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$Condition_sideContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$Conds_for_one_idContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$Conjunctive_testContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$ConstantContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$Disjunction_testContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$FlagsContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$Func_callContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$Func_nameContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$Id_testContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$Multi_value_testContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$Positive_condContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$Pref_specifierContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$PrintContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$RelationContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$Relational_testContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$Simple_testContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$Single_testContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$SoarContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$Soar_productionContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$State_imp_condContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$Sym_constantContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$TestContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$Unary_or_binary_prefContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$Unary_prefContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$ValueContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$Value_makeContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$Value_testContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$VariableContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$Variable_or_sym_constantContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarVisitor.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/soar/SoarTranslator.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/soar/SymbolTree.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/soar/SymbolVisitor.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/soar/UPPAALCreator$UPPAALElementWithXY.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/soar/UPPAALCreator.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/soar/UPPAALSemanticVisitor.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/uppaal/UPPAALTranslator.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/antlr4/edu/fit/hiai/lvca/antlr4/Soar.g4" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/java/edu/fit/hiai/lvca/translator/gen/Soar.interp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/java/edu/fit/hiai/lvca/translator/gen/Soar.tokens" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/java/edu/fit/hiai/lvca/translator/gen/SoarBaseListener.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/java/edu/fit/hiai/lvca/translator/gen/SoarBaseVisitor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/java/edu/fit/hiai/lvca/translator/gen/SoarLexer.interp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/java/edu/fit/hiai/lvca/translator/gen/SoarLexer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/java/edu/fit/hiai/lvca/translator/gen/SoarLexer.tokens" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/java/edu/fit/hiai/lvca/translator/gen/SoarListener.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/java/edu/fit/hiai/lvca/translator/gen/SoarParser.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/java/edu/fit/hiai/lvca/translator/gen/SoarVisitor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/java/edu/fit/hiai/lvca/translator/soar/SymbolTree.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/java/edu/fit/hiai/lvca/translator/soar/SymbolVisitor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/java/edu/fit/hiai/lvca/translator/soar/UPPAALCreator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/java/edu/fit/hiai/lvca/translator/soar/UPPAALSemanticVisitor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/java/edu/fit/hiai/lvca/translator/uppaal/UPPAALTranslator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/resources/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/uppaal/model.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Translated Soar Examples/translated-counter.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Translated Soar Examples/translated-mac-init.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Translated Soar Examples/translated-multi-attribute.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/summer2024/counter.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/summer2024/goalUppaalFile.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/summer2024/mac-rewritten-nopref.soar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/summer2024/mac-rewritten.soar" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="ROOT_SYNC" value="SYNC" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "SummerMueller"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/SummerMueller/TCAVL.git",
+    "accountId": "c47307ab-668c-4213-8cec-a8c375c6ef00"
+  }
+}]]></component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="2B29qkRLcFAcQgLT8Y10BwkOnki" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.SoarTranslator.executor": "Run",
+    "Downloaded.Files.Path.Enabled": "false",
+    "Repository.Attach.Annotations": "false",
+    "Repository.Attach.JavaDocs": "false",
+    "Repository.Attach.Sources": "false",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "master",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/summe/Summer 2025/TCAVL-main/TCAVL-main",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "onboarding.tips.debug.path": "C:/Users/summe/Summer 2025/TCAVL-main/something2/src/Main.java",
+    "project.structure.last.edited": "Libraries",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration name="SoarTranslator" type="Application" factoryName="Application" nameIsGenerated="true">
+      <option name="ALTERNATIVE_JRE_PATH" value="16" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="MAIN_CLASS_NAME" value="edu.fit.hiai.lvca.translator.soar.SoarTranslator" />
+      <module name="something2" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="edu.fit.hiai.lvca.translator.soar.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.23774.435" />
+        <option value="bundled-js-predefined-d6986cc7102b-f27c65a3e318-JavaScript-IU-251.23774.435" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="7dfef061-ae1e-4c2f-91a7-f226baa34d7c" name="Changes" comment="" />
+      <created>1656093505570</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1656093505570</updated>
+      <workItem from="1749757734500" duration="2590000" />
+      <workItem from="1750086261988" duration="121000" />
+      <workItem from="1750087031990" duration="1220000" />
+      <workItem from="1750088280165" duration="6373000" />
+      <workItem from="1750102813018" duration="379000" />
+      <workItem from="1750103250411" duration="1005000" />
+      <workItem from="1750104314168" duration="20000" />
+      <workItem from="1750104485460" duration="11717000" />
+      <workItem from="1750689878898" duration="2256000" />
+      <workItem from="1750707116568" duration="4053000" />
+    </task>
+    <task id="LOCAL-00001" summary="test commit">
+      <option name="closed" value="true" />
+      <created>1750769302903</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1750769302903</updated>
+    </task>
+    <task id="LOCAL-00002" summary="test test">
+      <option name="closed" value="true" />
+      <created>1750769392164</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1750769392164</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="test commit" />
+    <MESSAGE value="test test" />
+    <option name="LAST_COMMIT_MESSAGE" value="test test" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/SoarToUPPAALTranslator/untitled/src/Main.java</url>
+          <line>11</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

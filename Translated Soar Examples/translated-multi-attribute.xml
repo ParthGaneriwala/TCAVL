@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>
+int state_&lt;attribute; 
+int state_superstate; 
+int state_att3; 
+int state_operator_name; 
+int state_name; 
+int state_att2; 
+int state_att1; 
+const int nil = 0;
+const int init_multi_attribute = 1; 
+const int cone = 2; 
+const int multi_attribute = 3; 
+const int pipe = 4; 
+const int check_pipe = 5; 
+const int attr = 6; 
+broadcast chan Run_Rule;
+</declaration>
+	<template>
+		<name x="5" y="5">propose_initialize_multi_attribute</name>
+		<location id="id0" x="102" y="-68">
+			<name x="102" y="-68">Run</name>
+		</location>
+		<location id="id1" x="-119" y="-68">
+			<name x="-119" y="-68">Start</name>
+			<committed/>
+		</location>
+		<init ref="id1"/>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-34" y="-51">Run_Rule?</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-136" y="-187">state_superstate == nil &amp;&amp; state_name == nil</label>
+			<label kind="synchronisation" x="-42" y="-144">Run_Rule?</label>
+			<label kind="assignment" x="-127" y="-170">state_operator_name = init_multi_attribute</label>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">apply_initialize_multi_attribute</name>
+		<location id="id2" x="212" y="-34">
+			<name x="212" y="-34">Run</name>
+		</location>
+		<location id="id3" x="-8" y="-34">
+			<name x="-8" y="-34">Start</name>
+			<committed/>
+		</location>
+		<init ref="id3"/>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="85" y="0">Run_Rule?</label>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id2"/>
+			<label kind="guard" x="0" y="-144">state_operator_name == init_multi_attribute</label>
+			<label kind="synchronisation" x="85" y="-85">Run_Rule?</label>
+			<label kind="assignment" x="-93" y="-110">state_name = multi_attribute, state_att3 = cone, state_att2 = pipe, state_att1 = attr</label>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">propose_check_exists_pipe</name>
+		<location id="id4" x="161" y="-42">
+			<name x="161" y="-33">Run</name>
+		</location>
+		<location id="id5" x="-59" y="-42">
+			<name x="-59" y="-42">Start</name>
+			<committed/>
+		</location>
+		<init ref="id5"/>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="42" y="-34">Run_Rule?</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id4"/>
+			<label kind="guard" x="-93" y="-170">state_name == multi_attribute &amp;&amp; state_&lt;attribute &gt; pipe</label>
+			<label kind="synchronisation" x="25" y="-102">Run_Rule?</label>
+			<label kind="assignment" x="-51" y="-136">state_operator_name = check_pipe</label>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">apply_check_exists_pipe_does_exist</name>
+		<location id="id6" x="187" y="-51">
+			<name x="187" y="-51">Run</name>
+		</location>
+		<location id="id7" x="-34" y="-51">
+			<name x="-42" y="-42">Start</name>
+			<committed/>
+		</location>
+		<init ref="id7"/>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="42" y="-25">Run_Rule?</label>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id6"/>
+			<label kind="guard" x="-93" y="-136">state_operator_name == check_pipe &amp;&amp; state_&lt;attribute &gt; pipe</label>
+			<label kind="synchronisation" x="51" y="-102">Run_Rule?</label>
+		</transition>
+	</template>
+	<template>
+		<name>scheduler</name>
+		<location id="id8" x="306" y="-34">
+			<name x="306" y="-34">Check</name>
+		</location>
+		<location id="id9" x="93" y="-34">
+			<name x="93" y="-34">Run</name>
+			<committed/>
+		</location>
+		<location id="id10" x="-85" y="-34">
+			<name x="-85" y="-34">Start</name>
+		</location>
+		<init ref="id10"/>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="170" y="0">Run_Rule!</label>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id8"/>
+			<label kind="guard" x="42" y="-102">!(state_operator_name == check_pipe &amp;&amp; state_&lt;attribute &gt; pipe)</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="-68" y="-85">Run_Rule!</label>
+		</transition>
+	</template>
+	<system>
+apply_initialize_multi_attribute_0 = apply_initialize_multi_attribute(); 
+propose_check_exists_pipe_0 = propose_check_exists_pipe(); 
+propose_initialize_multi_attribute_0 = propose_initialize_multi_attribute(); 
+apply_check_exists_pipe_does_exist_0 = apply_check_exists_pipe_does_exist(); 
+schd = scheduler();
+goal = apply_check_exists_pipe_does_exist(); 
+system apply_initialize_multi_attribute_0, propose_check_exists_pipe_0, propose_initialize_multi_attribute_0, apply_check_exists_pipe_does_exist_0, goal, schd;</system>
+	<queries>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>

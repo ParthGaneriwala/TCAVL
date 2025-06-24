@@ -1,0 +1,33 @@
+sp {propose*initialize*multi-condition
+   (state <s> ^superstate nil
+             -^name)
+-->
+   (<s> ^operator <o> +)
+   (<o> ^name init-conditions)
+}
+
+sp {apply*initialize*multi-condition
+   (state <s> ^operator <o>)
+   (<o> ^name init-conditions)
+-->
+   (<s> ^name test
+        ^shape circle
+        ^shape rectangle
+        ^shape triangle)
+}
+
+sp {propose*test*multi-condition
+   (state <s> ^shape <s1>
+              ^shape {<s2> <> circle}
+              ^shape {<s3> <> rectangle <> circle})
+-->
+   (<s> ^operator <o> + =)
+   (<o> ^name print)
+}
+
+sp {apply*test*multi-condition
+   (state <s> ^operator.name print)
+-->
+   (write (crlf) |This state has three shapes.|)
+   (halt)
+}

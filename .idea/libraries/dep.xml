@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="dep">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/SoarToUPPAALTranslator/dep" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+    <jarDirectory url="file://$PROJECT_DIR$/SoarToUPPAALTranslator/dep" recursive="false" />
+  </library>
+</component>
