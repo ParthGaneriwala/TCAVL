@@ -234,6 +234,7 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
 
         String productionName = ctx.sym_constant().getText();
         Map<String, String> localVariableDictionary = _variableDictionary.get(productionName);
+        System.out.println(localVariableDictionary);
 
         String id = ctx.condition_side().state_imp_cond().id_test().getText();
 
@@ -337,33 +338,62 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
         List<Element>  attrValueTestWithDisjunctions = getAttrValueTestWithDisjunctions(ctx);
         List<String> newlyExpandedStrings = new LinkedList<>();
 
+        System.out.println();
+        //System.out.println("current globals: " + _globals);
         Iterator<String> iterator = _globals.iterator();
         while (iterator.hasNext()) {
             String variable = iterator.next();
-            if (variable.contains("<<")){
-                for (Element avt : attrValueTestWithDisjunctions) {
+            //System.out.println("    checking this variable for disjunctions: " + variable);
+
+            if (variable.contains("<<")){    //Check current variable contains a disjunction
+                //System.out.println("        variable contains disjunction(s):");
+                Queue<String> variables = new LinkedList<>();
+                variables.add(variable);
+
+                for (Element avt : attrValueTestWithDisjunctions) {  //Check disjunction exists in the Soar file
+                    //System.out.println("        " + avt.attributeValue("allValues"));
                     if (variable.contains(avt.attributeValue("allValues"))){
-                        iterator.remove(); // Safe removal of the element
+                       // System.out.println("            true");
+                        Queue<String> expandedStrings = new LinkedList<>();
 
                         //replace with expanded list of disjunction options
-                        int size = Integer.parseInt(avt.attributeValue("size"));
-                        for (int i = 0; i < size; i++){
-                            newlyExpandedStrings.add(variable.replace(avt.attributeValue("allValues"), avt.attributeValue("const"+i)));
+                        while (!variables.isEmpty()){
+                            String v = variables.remove();
+                            int size = Integer.parseInt(avt.attributeValue("size"));
+                            for (int i = 0; i < size; i++) {
+                                String expanded = v.replace(avt.attributeValue("allValues"), avt.attributeValue("const" + i));
+                                //System.out.println("                new interm string: " + expanded);
+                                expandedStrings.add(expanded);
+                            }
                         }
+                        variables.addAll(expandedStrings);
+
+                        //replace with expanded list of disjunction options
+                        //int size = Integer.parseInt(avt.attributeValue("size"));
+                        //for (int i = 0; i < size; i++){
+                        //    String expandedString = variable.replace(avt.attributeValue("allValues"), avt.attributeValue("const"+i));
+                        //    System.out.println("                new string: " + expandedString);
+                        //    newlyExpandedStrings.add(expandedString);
+                        //}
                     }
                 }
+                //System.out.println("Variables to be added: " + variables);
+                newlyExpandedStrings.addAll(variables);
+                iterator.remove(); // Safe removal of the element
             }
         }
-
+        //System.out.println("newlyExpandedStrings: " + newlyExpandedStrings);
         _globals.addAll(newlyExpandedStrings);
-
-
+        //System.out.println("Updated globals: " + _globals);
+        //System.out.println();
     }
+
     @Override
     public Element visitSoar(SoarParser.SoarContext ctx)
     {
         ctx.soar_production().forEach(sp -> sp.accept(this));
 
+        System.out.println("Expanding all disjunctions");
         ctx.soar_production().forEach(this::expandDisjunctionStringVariables);
 
         final Element nta = new DefaultElement("nta");
