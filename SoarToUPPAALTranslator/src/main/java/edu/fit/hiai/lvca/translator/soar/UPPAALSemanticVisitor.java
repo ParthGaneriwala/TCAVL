@@ -547,7 +547,7 @@ public class UPPAALSemanticVisitor extends SoarBaseVisitor<Node> {
     }
 
     @Override
-    public Node visitAttr_value_make(SoarParser.Attr_value_makeContext ctx) {
+    public Node visitAttr_value_make(SoarParser.Attr_value_makeContext ctx, String varName) {
         String leftSide = ctx.variable_or_sym_constant()
                 .stream()
                 .map(RuleContext::getText)

@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -91,6 +93,7 @@ public class SoarTranslator
         Set<String> boolAttributeNames = symbolVisitor.getBooleanSymbols();
 
         Map<String, Map<String, String>> variablesPerProductionContext = symbolVisitor.getGlobalVariableDictionary();
+        HashMap<String, List<String>> referenceMap = symbolVisitor.getReferences();
 
         soarParseTree.reset();
 
@@ -99,7 +102,7 @@ public class SoarTranslator
                 .map(name -> name.replace("-", "_"))
                 .collect(Collectors.toSet());
 
-        edu.fit.hiai.lvca.translator.soar.UPPAALCreator uppaalCreator = new edu.fit.hiai.lvca.translator.soar.UPPAALCreator(stringAttributeNames, soarParseTree.soar(), variablesPerProductionContext, boolAttributeNames);
+        edu.fit.hiai.lvca.translator.soar.UPPAALCreator uppaalCreator = new edu.fit.hiai.lvca.translator.soar.UPPAALCreator(stringAttributeNames, soarParseTree.soar(), variablesPerProductionContext, boolAttributeNames, referenceMap);
         return uppaalCreator.getXML();
 
     }

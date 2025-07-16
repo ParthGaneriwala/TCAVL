@@ -6,7 +6,6 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 /**
@@ -26,6 +25,7 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
     private String nestedVariableName;
     private Map<String, Map<String, String>> globalVariableDictionary = new HashMap<>();
     private  Set<String> groupingVariableNames = new HashSet<>();   //holds variable names that are used for intermediate groupings with "{}"
+    private HashMap<String, List<String>> referenceMap = new HashMap<>();
 
     public SymbolVisitor(SoarParser.SoarContext ctx)
     {
@@ -79,6 +79,8 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
         return globalVariableDictionary;
     }
 
+    HashMap<String, List<String>> getReferences() {return referenceMap;}
+
     @Override
     public edu.fit.hiai.lvca.translator.soar.SymbolTree visitSoar(SoarParser.SoarContext ctx)
     {
@@ -99,6 +101,8 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
         System.out.println("    Symbol visiting condition side");
         ctx.condition_side().accept(this);
 
+        System.out.println("current variable dictionary: " + currentVariableDictionary.entrySet());
+
         System.out.println("    Symbol visiting action side");
         ctx.action_side().accept(this);
 
@@ -106,19 +110,20 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
 
         Map<String, String> variablePaths = new HashMap<>();
 
-        for (HashMap.Entry<String, String> varToValue : currentVariableDictionary.entrySet())
-        {
+        //System.out.println("current variable dictionary: " + currentVariableDictionary.entrySet());
+        for (HashMap.Entry<String, String> varToValue : currentVariableDictionary.entrySet()) {
+            //System.out.println(varToValue.getKey() + " = " + varToValue.getValue());
+            //System.out.println("vartoValue path: " + currentWorkingMemoryTree.pathTo(varToValue));
             //if variable name is just a grouping, then do not traverse entire tree, but return just the variable name
-            if(groupingVariableNames.contains(varToValue.getKey())){
+            if (groupingVariableNames.contains(varToValue.getKey())) {
                 variablePaths.put(varToValue.getKey(), (varToValue.getValue()));
-            }
-            else{
+            } else {
                 variablePaths.put(varToValue.getKey(), currentWorkingMemoryTree.pathTo(varToValue));
 
             }
         }
-
         globalVariableDictionary.put(ctx.sym_constant().getText(), variablePaths);
+        System.out.println();
         return null;
     }
 
@@ -397,7 +402,8 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
             edu.fit.hiai.lvca.translator.soar.SymbolTree attachPoint = ctx.variable().accept(this);
             System.out.println("        Action attach point is at " + attachPoint.name);
             ctx.attr_value_make().forEach(avm ->{
-                edu.fit.hiai.lvca.translator.soar.SymbolTree avmTree = avm.accept(this);
+                edu.fit.hiai.lvca.translator.soar.SymbolTree avmTree = avm.accept(this, attachPoint.name);
+                //System.out.println("            Value is " + avm.value_make().value().getText());
                 avmTree.value = avm.value_make().value().getText();
                 attachPoint.addChild(avmTree);
             } );
@@ -408,6 +414,7 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
     @Override
     public edu.fit.hiai.lvca.translator.soar.SymbolTree visitValue(SoarParser.ValueContext ctx)
     {
+        //System.out.println("visitValue: " + ctx.getText());
         ParseTree node = ctx.children.get(0);
 
 
@@ -423,31 +430,69 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
     }
 
     @Override
-    public edu.fit.hiai.lvca.translator.soar.SymbolTree visitAttr_value_make(SoarParser.Attr_value_makeContext ctx)
+    public edu.fit.hiai.lvca.translator.soar.SymbolTree visitAttr_value_make(SoarParser.Attr_value_makeContext ctx, String varName)
     {
+        System.out.println("------------visitAVM: " + ctx.getText());
         edu.fit.hiai.lvca.translator.soar.SymbolTree subtree = getTreeFromList(ctx.variable_or_sym_constant());
         nestedVariableName = null;
         edu.fit.hiai.lvca.translator.soar.SymbolTree rightHandTree = ctx.value_make().accept(this);
 
-
+        //System.out.println("            nestedVariableName: " + nestedVariableName);
         if (nestedVariableName != null)
         {
             if (rightHandTree == null)
             {
+                //System.out.println("            current var dic: " + currentVariableDictionary.entrySet());
+                //System.out.print("            testing: " + nestedVariableName);
                 if (!currentVariableDictionary.containsKey(nestedVariableName))
                 {
+                    //System.out.println("    var not in dictionary");
                     currentVariableDictionary.put(nestedVariableName, subtree.name);
+                    System.out.println("            added: " + nestedVariableName + "->" + subtree.name);
+                }
+                else
+                {
+                    //Detects and stores all references in a HashMap
+                    System.out.println("*********** reference detected at: " + nestedVariableName);
+                    String refKey = currentWorkingMemoryTree.pathTo(varName);
+                    System.out.println("varName:" + varName);
+                    System.out.println("refKey: " + refKey);
+                    if (refKey.contains("<<")) {
+                    //throw new IllegalArgumentException("Action variable contains disjunctions: " + refKey);
+                    }
+
+                    for (SoarParser.Variable_or_sym_constantContext a : ctx.variable_or_sym_constant()) {
+                        String currentAttr = a.getText();
+                        //if (currentAttr.contains("<<")) { throw new IllegalArgumentException("Attribute contains disjunctions: " + currentAttr); }
+                        if (currentAttr.contains("<")) { currentAttr = currentVariableDictionary.get(currentAttr); }
+                        //if (currentAttr.contains("<<")) { throw new IllegalArgumentException("Attribute contains disjunctions: " + currentAttr); }
+                        refKey += "_" + currentAttr;
+                    }
+                    //if (nestedVariableName.contains("<<")) { throw new IllegalArgumentException("Reference variable contains disjunctions: " + nestedVariableName); }
+                    String refValue = currentWorkingMemoryTree.pathTo(currentVariableDictionary.get(nestedVariableName));
+                    //if (refValue.contains("<<")) { throw new IllegalArgumentException("Reference contains disjunctions: " + refValue); }
+                    System.out.println("                wmt all paths: " + currentWorkingMemoryTree.getAllPaths());
+                    System.out.println("                refKey: " + refKey);
+                    System.out.println("                refValue: " + refValue);
+                    if (!referenceMap.containsKey(refKey)) {
+                        List<String> values = new LinkedList<>();
+                        values.add(refValue);
+                        referenceMap.put(refKey, values);
+                    };
+
+                    //System.out.println("            righttree path: " + rightHandTree.pathTo(nestedVariableName));
                 }
             }
             else
             {
+                //System.out.println("            rightHandTree: " + rightHandTree.name);
                 ctx.value_make().accept(this).getChildren()
                         .forEach(subtree::addChild);
             }
         }
         List<edu.fit.hiai.lvca.translator.soar.SymbolTree> subtreeChildren =  subtree.getChildren();
 
-
+        System.out.println(currentVariableDictionary);
         return subtree;
     }
 

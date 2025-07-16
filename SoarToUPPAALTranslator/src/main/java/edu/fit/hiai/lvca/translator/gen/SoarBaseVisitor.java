@@ -212,7 +212,7 @@ public class SoarBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements S
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitAttr_value_make(SoarParser.Attr_value_makeContext ctx) { return visitChildren(ctx); }
+	@Override public T visitAttr_value_make(SoarParser.Attr_value_makeContext ctx, String varName) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
