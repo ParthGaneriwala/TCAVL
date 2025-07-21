@@ -11,17 +11,23 @@ public class SymbolTree
 {
     final String name;
     String value;
+    private final List<String> disjunctions;
     private final List<SymbolTree> children;
 
     SymbolTree(String name)
     {
         this.name = name;
+        disjunctions = new LinkedList<>();
         children = new LinkedList<>();
     }
 
+    //List<String> getDisjunctions (String treeName) { return disjunctions; }
+
+    //void addDisjunction (String disjunction) { disjunctions.add(disjunction); }
+
     private boolean isLeaf()
     {
-        return children.size() == 0;
+        return children.isEmpty();
     }
 
     void addChild(SymbolTree childTree)

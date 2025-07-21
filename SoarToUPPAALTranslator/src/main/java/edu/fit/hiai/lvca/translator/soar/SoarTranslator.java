@@ -93,7 +93,7 @@ public class SoarTranslator
         Set<String> boolAttributeNames = symbolVisitor.getBooleanSymbols();
 
         Map<String, Map<String, String>> variablesPerProductionContext = symbolVisitor.getGlobalVariableDictionary();
-        HashMap<String, List<String>> referenceMap = symbolVisitor.getReferences();
+        Map<String, Set<String>> referenceMap = symbolVisitor.getReferences();
 
         soarParseTree.reset();
 

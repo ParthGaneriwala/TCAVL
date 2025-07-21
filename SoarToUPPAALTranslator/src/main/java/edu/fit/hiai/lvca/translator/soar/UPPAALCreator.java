@@ -63,11 +63,12 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
     private List<Integer> _y_axis_values = List.of(0, 100, -100);
     private Integer _y_axis_index = 0;
     private final Set<String> _globals;
-    private HashMap<String, List<String>> _referenceMap = new HashMap<>();
-    private final List<CreatorEdge> _edges = new LinkedList<>();
+    private Map<String, Set<String>> _referenceMap = new HashMap<>();
+    private List<CreatorEdge> _ruleEdges = new LinkedList<>();
+    private List<CreatorEdge> _updatedRuleEdges = new LinkedList<>();
     private SoarParser.Soar_productionContext _goalProductionContext;
 
-    public UPPAALCreator(Set<String> stringAttributeNames, SoarParser.SoarContext soar, Map<String, Map<String, String>> variablesPerProductionContext, Set<String> boolAttributeNames, HashMap<String, List<String>> referenceMap)
+    public UPPAALCreator(Set<String> stringAttributeNames, SoarParser.SoarContext soar, Map<String, Map<String, String>> variablesPerProductionContext, Set<String> boolAttributeNames, Map<String, Set<String>> referenceMap)
     {
 
         System.out.println("\n\n---------------------------------------------------------------------------------------");
@@ -286,7 +287,7 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
         //System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
         //System.out.println("Recursive trace of " + productionName);
         for (Element attrElement : attrValueTestWithDisjunctions){
-            System.out.println("    Entering for loop for attr: " + attrElement.getText());
+            //System.out.println("    Entering for loop for attr: " + attrElement.getText());
             List<String> replacedGuardsPopped = new LinkedList<>();           //stores the intermediate guard results after each attribute element replacement
             List<String> replacedUpdatesPopped = new LinkedList<>();           //stores the intermediate updates results after each attribute element replacement
 
@@ -315,6 +316,7 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
         //System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 
         // Organizes all the StartToRun transitions
+        _ruleEdges = new LinkedList<>();
         for (int i = 0; i<replacedGuardStrings.size(); i++){
             String[] individualGuards = replacedGuardStrings.get(i).split(" && ");
             String[] individualUpdates = replacedUpdateStrings.get(i).split(", ");
@@ -327,18 +329,19 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
             }
             for (String individualUpdate : individualUpdates) {
                 String[] updateParts = individualUpdate.split(" = ");
-                System.out.println("updateParts: " + individualUpdate);
                 if (updateParts.length > 1) { localEdgeUpdates.add(new Update(updateParts[0], updateParts[1])); }
             }
-            _edges.add(new CreatorEdge(localEdgeGuards, localEdgeUpdates));
+            _ruleEdges.add(new CreatorEdge(localEdgeGuards, localEdgeUpdates));
         }
 
         // Checks if any of the variables in guards or updates contain references
-        for(CreatorEdge creatorEdge : _edges){
-            // Call reference checking algorithm
+        _updatedRuleEdges = new LinkedList<>();
+        for(CreatorEdge creatorEdge : _ruleEdges) {
+            //updateReferences(creatorEdge);
         }
 
-        for (CreatorEdge creatorEdge : _edges){
+        // Converts each edge to a formatted xml element
+        for (CreatorEdge creatorEdge : _ruleEdges) {
 
             Element startToRunElement = new DefaultElement("transition");
             Element source = new DefaultElement("source").addAttribute("ref", "id" + startStateID);
@@ -369,6 +372,36 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
 
         return startToRuns;
     }
+
+    /*private void updateReferences(CreatorEdge edge){
+        boolean containsNoReferences = true;
+        Set<String> allLocalVariables = new HashSet<>();
+        edge.guards().forEach(guard -> allLocalVariables.add(guard.leftTerm()));
+        edge.guards().forEach(guard -> allLocalVariables.add(guard.rightTerm()));
+        edge.updates().forEach(update -> allLocalVariables.add(update.leftTerm()));
+        edge.updates().forEach(update -> allLocalVariables.addAll(List.of(update.rightTerm().split(" "))));
+        System.out.println(allLocalVariables);
+        outermost: for (String currentVariable : allLocalVariables) {
+            String[] layers = currentVariable.split("_");
+            String prefix = layers[0];
+            for (int i = 1; i < layers.length; i++) {
+                System.out.println("Checking prefix: " + prefix);
+                if (!_referenceMap.containsKey(prefix)) { prefix += "_" + layers[i]; }
+                else {
+                    containsNoReferences = false;
+                    System.out.println("    Reference to be updated at: " + prefix);
+                    for (String possibleKeys : _referenceMap.get(prefix)) {
+                        // call replace function that return new edge
+                        //updateReferences(replacedEdge);
+                    }
+                    break outermost;
+                }
+            }
+        }
+        if (containsNoReferences) {
+            _updatedRuleEdges.add(edge);
+        }
+    }*/
 
     private Element getSystemElement()
     {
@@ -1243,7 +1276,7 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
 
     // Recursively unravels each string by checking at each layer if the prefix is a reference to another string
     // **Only works for references with a single value
-    private String unravelReference (String reference) {
+    /*private String unravelReference (String reference) {
         String[] layers = reference.split("_");
         String current = layers[0];
         for (int i = 1; i < layers.length; i++) {
@@ -1260,7 +1293,7 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
         } else {
             return unravelReference(_referenceMap.get(current).get(0));
         }
-    }
+    }*/
 
     private String simplifiedString(String str)
     {
