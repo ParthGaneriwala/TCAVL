@@ -64,6 +64,8 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
 
     private final Set<String> _booleanGlobals;
     private final Map<String, Map<String, String>> _variableDictionary;
+    private final Map<String, Map<String, List<String>>> _disjunctionDictionary;
+    private final Map<String, List<String>> _allDisjunctions = new HashMap<>();
     private final Document _doc = DocumentHelper.createDocument();
     private final Set<String> _templateNames = new HashSet<>();
     private Integer _locationCounter = 0;
@@ -75,7 +77,7 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
     private List<CreatorEdge> _updatedRuleEdges = new LinkedList<>();
     private SoarParser.Soar_productionContext _goalProductionContext;
 
-    public UPPAALCreator(Set<String> stringAttributeNames, SoarParser.SoarContext soar, Map<String, Map<String, String>> variablesPerProductionContext, Set<String> boolAttributeNames, Map<String, Set<String>> referenceMap)
+    public UPPAALCreator(Set<String> stringAttributeNames, SoarParser.SoarContext soar, Map<String, Map<String, String>> variablesPerProductionContext, Set<String> boolAttributeNames, Map<String, Map<String, List<String>>> disjunctionsPerProductionContext, Map<String, Set<String>> referenceMap)
     {
 
         System.out.println("\n\n---------------------------------------------------------------------------------------");
@@ -86,6 +88,13 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
         _doc.setXMLEncoding("utf-8");
         _doc.setDocType(new DefaultDocumentType("nta", "-//Uppaal Team//DTD Flat System 1.1//EN", "http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd"));
         _variableDictionary = variablesPerProductionContext;
+        _disjunctionDictionary = disjunctionsPerProductionContext;
+        _disjunctionDictionary.forEach((production, disjunctionMap) -> _allDisjunctions.putAll(disjunctionMap));
+        Map<String, List<String>> tempMap = new HashMap<>();
+        for (Map.Entry<String, List<String>> entry : _allDisjunctions.entrySet()){
+            tempMap.put(simplifiedString(entry.getKey()), entry.getValue());
+        }
+        _allDisjunctions.putAll(tempMap);
         _referenceMap = referenceMap;
         _doc.setRootElement(soar.accept(this));
     }
@@ -163,7 +172,7 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
         template.add(getLocationWithNameElement(startID, "Start"));
         template.add(new DefaultElement("init").addAttribute("ref", "id" + startID));
         template.add(getTransitionWithText(checkID, runID, "synchronisation", "Run_Rule!"));
-        template.add(getTransitionWithText(runID, checkID, "guard", "!(" + _goalProductionContext.condition_side().accept(this).getText() + ")"));
+        template.add(getTransitionWithText(runID, checkID, "guard", "!(" + simplifiedString(_goalProductionContext.condition_side().accept(this).getText()) + ")"));
         template.add(getTransitionWithText(startID, runID, "synchronisation", "Run_Rule!"));
 
         return template;
@@ -226,9 +235,9 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
 
         List<Element> attrValueTestWithDisjunctions = new LinkedList<>();
         for ( SoarParser.Attr_value_testsContext attrTest : ctx.condition_side().state_imp_cond().attr_value_tests()) {
-            System.out.println("    state condition: " + attrTest.getText());
+            //System.out.println("    state condition: " + attrTest.getText());
             Element attributeElement = attrTest.accept(this);
-            System.out.println("    attr element: " + attributeElement.getText());
+            //System.out.println("    attr element: " + attributeElement.getText());
             //if the attribute test involves multiple attributes (assuming a disjunction of attributes)
             if (attributeElement.attributeValue("size") != null) {
                 attrValueTestWithDisjunctions.add(attributeElement);
@@ -237,9 +246,9 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
 
         ctx.condition_side().cond().forEach(condContext ->{
             for (SoarParser.Attr_value_testsContext attrTest : condContext.positive_cond().conds_for_one_id().attr_value_tests()){
-                System.out.println("    positive condition: " + attrTest.getText());
+                //System.out.println("    positive condition: " + attrTest.getText());
                 Element attributeElement = attrTest.accept(this);
-                System.out.println("    attr element: " + attributeElement.getText());
+                //System.out.println("    attr element: " + attributeElement.getText());
                 //if the attribute test involves multiple attributes (assuming a disjunction of attributes)
                 if (attributeElement.attributeValue("size") != null) {
                     attrValueTestWithDisjunctions.add(attributeElement);
@@ -426,14 +435,17 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
         List<Update> newUpdates = new ArrayList<>();
         for (Guard guard : guards) {
             String newLeftTerm = guard.leftTerm();
+            String newSymbol = guard.symbol();
+            String newRightTerm = guard.rightTerm();
             if (!(guard.leftTerm().equals(reference)) && guard.leftTerm().contains(reference)) {
                 newLeftTerm = guard.leftTerm().replace(reference, replacement);
-            }
-            String newRightTerm = guard.rightTerm();
-            if (!(guard.rightTerm().equals(reference)) && guard.rightTerm().contains(reference)) {
+            } else if (guard.leftTerm().equals(reference) && guard.symbol().equals("!=") && guard.rightTerm().equals("nil")) {
+                newSymbol = "==";
+                newRightTerm = replacement;
+            } else if (!(guard.rightTerm().equals(reference)) && guard.rightTerm().contains(reference)) {
                 newRightTerm = guard.rightTerm().replace(reference, replacement);
             }
-            newGuards.add(new Guard(newLeftTerm, guard.symbol(), newRightTerm));
+            newGuards.add(new Guard(newLeftTerm, newSymbol, newRightTerm));
         }
         for (Update update : updates) {
             String newLeftTerm = update.leftTerm();
@@ -477,57 +489,32 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
     //Eg. State_<<trackfield>> is expanded to State_track and State_field
     private void expandDisjunctionStringVariables(SoarParser.Soar_productionContext ctx){
         System.out.println("^^^^ Getting attrValueTestWithDisjunctions");
-        List<Element>  attrValueTestWithDisjunctions = getAttrValueTestWithDisjunctions(ctx);
-        List<String> newlyExpandedStrings = new LinkedList<>();
+        System.out.println("production name: " + ctx.sym_constant().getText());
+        Set<String> expandedStrings = new HashSet<>();
 
-        System.out.println();
-        System.out.println("current globals: " + _globals);
         Iterator<String> iterator = _globals.iterator();
         while (iterator.hasNext()) {
             String variable = iterator.next();
-            System.out.println("    checking this variable for disjunctions: " + variable);
-
-            if (variable.contains("<<")){    //Check current variable contains a disjunction
-                System.out.println("        variable contains disjunction(s):");
-                Queue<String> variables = new LinkedList<>();
-                variables.add(variable);
-
-                for (Element avt : attrValueTestWithDisjunctions) {  //Check disjunction exists in the Soar file
-                    System.out.println("        " + avt.attributeValue("allValues"));
-                    if (variable.contains(avt.attributeValue("allValues"))){
-                        System.out.println("            true");
-                        Queue<String> expandedStrings = new LinkedList<>();
-
-                        //replace with expanded list of disjunction options
-                        while (!variables.isEmpty()){
-                            String v = variables.remove();
-                            int size = Integer.parseInt(avt.attributeValue("size"));
-                            for (int i = 0; i < size; i++) {
-                                String expanded = v.replace(avt.attributeValue("allValues"), avt.attributeValue("const" + i));
-                                System.out.println("                new interm string: " + expanded);
-                                expandedStrings.add(expanded);
-                            }
+            Queue<String> variables = new LinkedList<>();
+            variables.add(variable);
+            while (!variables.isEmpty()) {
+                String current = variables.remove();
+                if (current.contains("<<") && current.contains(">>")) {
+                    String disjunction = current.substring(current.indexOf("<<"), current.indexOf(">>") + 2);
+                    if (_allDisjunctions.containsKey(disjunction)) {
+                        for (String constant : _allDisjunctions.get(disjunction)) {
+                            variables.add(current.replace(disjunction, constant));
                         }
-                        variables.addAll(expandedStrings);
-
-                        //replace with expanded list of disjunction options
-                        //int size = Integer.parseInt(avt.attributeValue("size"));
-                        //for (int i = 0; i < size; i++){
-                        //    String expandedString = variable.replace(avt.attributeValue("allValues"), avt.attributeValue("const"+i));
-                        //    System.out.println("                new string: " + expandedString);
-                        //    newlyExpandedStrings.add(expandedString);
-                        //}
+                    } else {
+                        throw new NoSuchElementException("Could not find values for disjunction: " + disjunction);
                     }
+                } else {
+                    expandedStrings.add(simplifiedString(current));
                 }
-                System.out.println("Variables to be added: " + variables);
-                newlyExpandedStrings.addAll(variables);
-                iterator.remove(); // Safe removal of the element
             }
+            iterator.remove();
         }
-        System.out.println("newlyExpandedStrings: " + newlyExpandedStrings);
-        _globals.addAll(newlyExpandedStrings);
-        System.out.println("Updated globals: " + _globals);
-        System.out.println();
+        _globals.addAll(expandedStrings);
     }
 
     @Override

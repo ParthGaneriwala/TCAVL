@@ -93,6 +93,7 @@ public class SoarTranslator
         Set<String> boolAttributeNames = symbolVisitor.getBooleanSymbols();
 
         Map<String, Map<String, String>> variablesPerProductionContext = symbolVisitor.getGlobalVariableDictionary();
+        Map<String, Map<String, List<String>>> disjunctionsPerProductionContext = symbolVisitor.getGlobalDisjunctionDictionary();
         Map<String, Set<String>> referenceMap = symbolVisitor.getReferences();
 
         soarParseTree.reset();
@@ -102,7 +103,7 @@ public class SoarTranslator
                 .map(name -> name.replace("-", "_"))
                 .collect(Collectors.toSet());
 
-        edu.fit.hiai.lvca.translator.soar.UPPAALCreator uppaalCreator = new edu.fit.hiai.lvca.translator.soar.UPPAALCreator(stringAttributeNames, soarParseTree.soar(), variablesPerProductionContext, boolAttributeNames, referenceMap);
+        edu.fit.hiai.lvca.translator.soar.UPPAALCreator uppaalCreator = new edu.fit.hiai.lvca.translator.soar.UPPAALCreator(stringAttributeNames, soarParseTree.soar(), variablesPerProductionContext, boolAttributeNames, disjunctionsPerProductionContext, referenceMap);
         return uppaalCreator.getXML();
 
     }

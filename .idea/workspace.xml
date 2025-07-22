@@ -4,10 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7dfef061-ae1e-4c2f-91a7-f226baa34d7c" name="Changes" comment="Implemented the reference storage mechanism in the SymbolVisitor which expands all shared and unique disjunctions before storing">
+    <list default="true" id="7dfef061-ae1e-4c2f-91a7-f226baa34d7c" name="Changes" comment="Implemented the reference update algorithm minus the special cases for references occuring in the left term of the condition. also this version has broken global variable disjunction handling">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/soar/UPPAALCreator$UPPAALElementWithXY.class" beforeDir="false" afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/soar/UPPAALCreator$UPPAALElementWithXY.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/soar/SoarTranslator.class" beforeDir="false" afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/soar/SoarTranslator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/soar/SymbolVisitor.class" beforeDir="false" afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/soar/SymbolVisitor.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/soar/UPPAALCreator.class" beforeDir="false" afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/soar/UPPAALCreator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/java/edu/fit/hiai/lvca/translator/soar/SoarTranslator.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/java/edu/fit/hiai/lvca/translator/soar/SoarTranslator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/java/edu/fit/hiai/lvca/translator/soar/SymbolVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/java/edu/fit/hiai/lvca/translator/soar/SymbolVisitor.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/java/edu/fit/hiai/lvca/translator/soar/UPPAALCreator.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/java/edu/fit/hiai/lvca/translator/soar/UPPAALCreator.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -115,7 +118,7 @@
       <workItem from="1750707116568" duration="6439000" />
       <workItem from="1750774147271" duration="60000" />
       <workItem from="1750774222946" duration="4146000" />
-      <workItem from="1750941484097" duration="224914000" />
+      <workItem from="1750941484097" duration="235915000" />
     </task>
     <task id="LOCAL-00001" summary="test commit">
       <option name="closed" value="true" />
@@ -173,7 +176,15 @@
       <option name="project" value="LOCAL" />
       <updated>1753111194662</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Implemented the reference update algorithm minus the special cases for references occuring in the left term of the condition. also this version has broken global variable disjunction handling">
+      <option name="closed" value="true" />
+      <created>1753198347356</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1753198347356</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -198,7 +209,8 @@
     <MESSAGE value="created simple soar example for testing references" />
     <MESSAGE value="Implemented a reference detection/storage mechanism in the SymbolVisitor and organized how edges are maintained in the UPPAALCreator" />
     <MESSAGE value="Implemented the reference storage mechanism in the SymbolVisitor which expands all shared and unique disjunctions before storing" />
-    <option name="LAST_COMMIT_MESSAGE" value="Implemented the reference storage mechanism in the SymbolVisitor which expands all shared and unique disjunctions before storing" />
+    <MESSAGE value="Implemented the reference update algorithm minus the special cases for references occuring in the left term of the condition. also this version has broken global variable disjunction handling" />
+    <option name="LAST_COMMIT_MESSAGE" value="Implemented the reference update algorithm minus the special cases for references occuring in the left term of the condition. also this version has broken global variable disjunction handling" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

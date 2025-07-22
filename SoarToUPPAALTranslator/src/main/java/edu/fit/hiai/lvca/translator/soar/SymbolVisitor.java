@@ -24,7 +24,8 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
     private Map<String, String> currentVariableDictionary;
     private Map<String, List<String>> currentDisjunctionMap;
     private String nestedVariableName;
-    private Map<String, Map<String, String>> globalVariableDictionary = new HashMap<>();
+    private final Map<String, Map<String, String>> globalVariableDictionary = new HashMap<>();
+    private final Map<String, Map<String, List<String>>> globalDisjunctionDictionary = new HashMap<>();
     private Set<String> groupingVariableNames = new HashSet<>();   //holds variable names that are used for intermediate groupings with "{}"
     private Map<String, Set<String>> referenceMap = new HashMap<>();
 
@@ -80,7 +81,9 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
         return globalVariableDictionary;
     }
 
-    Map<String, Set<String>> getReferences() {return referenceMap;}
+    Map<String, Map<String, List<String>>> getGlobalDisjunctionDictionary() { return globalDisjunctionDictionary; }
+
+    Map<String, Set<String>> getReferences() {return referenceMap; }
 
     @Override
     public edu.fit.hiai.lvca.translator.soar.SymbolTree visitSoar(SoarParser.SoarContext ctx)
@@ -125,6 +128,9 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
             }
         }
         globalVariableDictionary.put(ctx.sym_constant().getText(), variablePaths);
+        System.out.println("current disjunction dictionary: " + currentDisjunctionMap);
+        globalDisjunctionDictionary.put(ctx.sym_constant().getText(), currentDisjunctionMap);
+        System.out.println("global disjunction dictionary: " + globalDisjunctionDictionary);
         System.out.println();
         return null;
     }
