@@ -33,11 +33,19 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
     record CreatorEdge(List<Guard> guards, List<Update> updates) {}
     record Guard(String leftTerm, String symbol, String rightTerm) {
         @Override
-        public String toString() { return leftTerm + " " + symbol + " " + rightTerm; }
+        public String toString() {
+            String newLeft = leftTerm.replace("-", "_");
+            String newRight = rightTerm.replace("-", "_");
+            return newLeft + " " + symbol + " " + newRight;
+        }
     }
     record Update(String leftTerm, String rightTerm) {
         @Override
-        public String toString() { return leftTerm + " = " + rightTerm; }
+        public String toString() {
+            String newLeft = leftTerm.replace("-", "_");
+            String newRight = rightTerm.replace("-", "_").replace(" _ ", " - ");
+            return newLeft + " = " + newRight;
+        }
     }
 
     private class UPPAALElementWithXY extends DefaultElement
@@ -64,7 +72,6 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
     private Integer _y_axis_index = 0;
     private final Set<String> _globals;
     private Map<String, Set<String>> _referenceMap = new HashMap<>();
-    private List<CreatorEdge> _ruleEdges = new LinkedList<>();
     private List<CreatorEdge> _updatedRuleEdges = new LinkedList<>();
     private SoarParser.Soar_productionContext _goalProductionContext;
 
@@ -218,9 +225,10 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
     private List<Element> getAttrValueTestWithDisjunctions (SoarParser.Soar_productionContext ctx){
 
         List<Element> attrValueTestWithDisjunctions = new LinkedList<>();
-
         for ( SoarParser.Attr_value_testsContext attrTest : ctx.condition_side().state_imp_cond().attr_value_tests()) {
+            System.out.println("    state condition: " + attrTest.getText());
             Element attributeElement = attrTest.accept(this);
+            System.out.println("    attr element: " + attributeElement.getText());
             //if the attribute test involves multiple attributes (assuming a disjunction of attributes)
             if (attributeElement.attributeValue("size") != null) {
                 attrValueTestWithDisjunctions.add(attributeElement);
@@ -229,7 +237,9 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
 
         ctx.condition_side().cond().forEach(condContext ->{
             for (SoarParser.Attr_value_testsContext attrTest : condContext.positive_cond().conds_for_one_id().attr_value_tests()){
+                System.out.println("    positive condition: " + attrTest.getText());
                 Element attributeElement = attrTest.accept(this);
+                System.out.println("    attr element: " + attributeElement.getText());
                 //if the attribute test involves multiple attributes (assuming a disjunction of attributes)
                 if (attributeElement.attributeValue("size") != null) {
                     attrValueTestWithDisjunctions.add(attributeElement);
@@ -237,7 +247,7 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
             }
 
         });
-
+        System.out.println("    Returning disjunction tests: " + attrValueTestWithDisjunctions);
         return attrValueTestWithDisjunctions;
     }
     private  List<Element> getAllSTartToRunTransitions (String runStateID, String startStateID, SoarParser.Soar_productionContext ctx){
@@ -283,6 +293,7 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
 
         //stack implementation to get all combination of attribute disjunction values
         List<Element> attrValueTestWithDisjunctions = getAttrValueTestWithDisjunctions(ctx);
+        //System.out.println("attrValueTestWithDisjunctions" + attrValueTestWithDisjunctions);
         //System.out.println();
         //System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
         //System.out.println("Recursive trace of " + productionName);
@@ -316,7 +327,7 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
         //System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 
         // Organizes all the StartToRun transitions
-        _ruleEdges = new LinkedList<>();
+        List<CreatorEdge> _ruleEdges = new LinkedList<>();
         for (int i = 0; i<replacedGuardStrings.size(); i++){
             String[] individualGuards = replacedGuardStrings.get(i).split(" && ");
             String[] individualUpdates = replacedUpdateStrings.get(i).split(", ");
@@ -336,12 +347,17 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
 
         // Checks if any of the variables in guards or updates contain references
         _updatedRuleEdges = new LinkedList<>();
+        System.out.println("Old edges:");
         for(CreatorEdge creatorEdge : _ruleEdges) {
-            //updateReferences(creatorEdge);
+            System.out.println("    " + creatorEdge);
+            updateReferences(creatorEdge);
         }
 
         // Converts each edge to a formatted xml element
-        for (CreatorEdge creatorEdge : _ruleEdges) {
+        System.out.println("New edges:");
+        for (CreatorEdge creatorEdge : _updatedRuleEdges) {
+
+            System.out.println("    " + creatorEdge);
 
             Element startToRunElement = new DefaultElement("transition");
             Element source = new DefaultElement("source").addAttribute("ref", "id" + startStateID);
@@ -351,13 +367,13 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
 
             Element guard = new UPPAALElementWithXY("label")
                     .addAttribute("kind", "guard")
-                    .addText(String.join(" && ", creatorEdge.guards().stream().map(Guard::toString).collect(Collectors.joining())));
+                    .addText(creatorEdge.guards().stream().map(Guard::toString).collect(Collectors.joining(" && ")));
 
             startToRunElement.add(guard);
 
             Element update = new UPPAALElementWithXY("label")
                     .addAttribute("kind", "assignment")
-                    .addText(String.join(", ", creatorEdge.updates().stream().map(Update::toString).collect(Collectors.joining())));
+                    .addText(creatorEdge.updates().stream().map(Update::toString).collect(Collectors.joining(", ")));
 
             startToRunElement.add(update);
 
@@ -373,14 +389,14 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
         return startToRuns;
     }
 
-    /*private void updateReferences(CreatorEdge edge){
+    private void updateReferences(CreatorEdge edge){
         boolean containsNoReferences = true;
         Set<String> allLocalVariables = new HashSet<>();
         edge.guards().forEach(guard -> allLocalVariables.add(guard.leftTerm()));
         edge.guards().forEach(guard -> allLocalVariables.add(guard.rightTerm()));
         edge.updates().forEach(update -> allLocalVariables.add(update.leftTerm()));
         edge.updates().forEach(update -> allLocalVariables.addAll(List.of(update.rightTerm().split(" "))));
-        System.out.println(allLocalVariables);
+        //System.out.println(allLocalVariables);
         outermost: for (String currentVariable : allLocalVariables) {
             String[] layers = currentVariable.split("_");
             String prefix = layers[0];
@@ -390,9 +406,9 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
                 else {
                     containsNoReferences = false;
                     System.out.println("    Reference to be updated at: " + prefix);
-                    for (String possibleKeys : _referenceMap.get(prefix)) {
-                        // call replace function that return new edge
-                        //updateReferences(replacedEdge);
+                    for (String possibleKey : _referenceMap.get(prefix)) {
+                        // Calls the replace function that return new edge and recurses on it
+                        updateReferences(replaceEdge(edge, prefix, possibleKey));
                     }
                     break outermost;
                 }
@@ -401,7 +417,40 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
         if (containsNoReferences) {
             _updatedRuleEdges.add(edge);
         }
-    }*/
+    }
+
+    private CreatorEdge replaceEdge(CreatorEdge edge, String reference, String replacement) {
+        List<Guard> guards = edge.guards();
+        List<Update> updates = edge.updates();
+        List<Guard> newGuards = new ArrayList<>();
+        List<Update> newUpdates = new ArrayList<>();
+        for (Guard guard : guards) {
+            String newLeftTerm = guard.leftTerm();
+            if (!(guard.leftTerm().equals(reference)) && guard.leftTerm().contains(reference)) {
+                newLeftTerm = guard.leftTerm().replace(reference, replacement);
+            }
+            String newRightTerm = guard.rightTerm();
+            if (!(guard.rightTerm().equals(reference)) && guard.rightTerm().contains(reference)) {
+                newRightTerm = guard.rightTerm().replace(reference, replacement);
+            }
+            newGuards.add(new Guard(newLeftTerm, guard.symbol(), newRightTerm));
+        }
+        for (Update update : updates) {
+            String newLeftTerm = update.leftTerm();
+            if (!(update.leftTerm().equals(reference)) && update.leftTerm().contains(reference)) {
+                newLeftTerm = update.leftTerm().replace(reference, replacement);
+            }
+            String[] rightTerms = update.rightTerm().split(" ");
+            for (int i = 0; i < rightTerms.length; i++) {
+                if (!(rightTerms[i].equals(reference)) && rightTerms[i].contains(reference)) {
+                    rightTerms[i] = rightTerms[i].replace(reference, replacement);
+                }
+            }
+            String newRightTerm = String.join(" ", rightTerms);
+            newUpdates.add(new Update(newLeftTerm, newRightTerm));
+        }
+        return new CreatorEdge(newGuards, newUpdates);
+    }
 
     private Element getSystemElement()
     {
@@ -427,25 +476,26 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
     //Function to remove variables with <<>> and replace them with each disjunction having its own variable
     //Eg. State_<<trackfield>> is expanded to State_track and State_field
     private void expandDisjunctionStringVariables(SoarParser.Soar_productionContext ctx){
+        System.out.println("^^^^ Getting attrValueTestWithDisjunctions");
         List<Element>  attrValueTestWithDisjunctions = getAttrValueTestWithDisjunctions(ctx);
         List<String> newlyExpandedStrings = new LinkedList<>();
 
-        //System.out.println();
-        //System.out.println("current globals: " + _globals);
+        System.out.println();
+        System.out.println("current globals: " + _globals);
         Iterator<String> iterator = _globals.iterator();
         while (iterator.hasNext()) {
             String variable = iterator.next();
-            //System.out.println("    checking this variable for disjunctions: " + variable);
+            System.out.println("    checking this variable for disjunctions: " + variable);
 
             if (variable.contains("<<")){    //Check current variable contains a disjunction
-                //System.out.println("        variable contains disjunction(s):");
+                System.out.println("        variable contains disjunction(s):");
                 Queue<String> variables = new LinkedList<>();
                 variables.add(variable);
 
                 for (Element avt : attrValueTestWithDisjunctions) {  //Check disjunction exists in the Soar file
-                    //System.out.println("        " + avt.attributeValue("allValues"));
+                    System.out.println("        " + avt.attributeValue("allValues"));
                     if (variable.contains(avt.attributeValue("allValues"))){
-                       // System.out.println("            true");
+                        System.out.println("            true");
                         Queue<String> expandedStrings = new LinkedList<>();
 
                         //replace with expanded list of disjunction options
@@ -454,7 +504,7 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
                             int size = Integer.parseInt(avt.attributeValue("size"));
                             for (int i = 0; i < size; i++) {
                                 String expanded = v.replace(avt.attributeValue("allValues"), avt.attributeValue("const" + i));
-                                //System.out.println("                new interm string: " + expanded);
+                                System.out.println("                new interm string: " + expanded);
                                 expandedStrings.add(expanded);
                             }
                         }
@@ -469,15 +519,15 @@ public class UPPAALCreator extends SoarBaseVisitor<Element>
                         //}
                     }
                 }
-                //System.out.println("Variables to be added: " + variables);
+                System.out.println("Variables to be added: " + variables);
                 newlyExpandedStrings.addAll(variables);
                 iterator.remove(); // Safe removal of the element
             }
         }
-        //System.out.println("newlyExpandedStrings: " + newlyExpandedStrings);
+        System.out.println("newlyExpandedStrings: " + newlyExpandedStrings);
         _globals.addAll(newlyExpandedStrings);
-        //System.out.println("Updated globals: " + _globals);
-        //System.out.println();
+        System.out.println("Updated globals: " + _globals);
+        System.out.println();
     }
 
     @Override

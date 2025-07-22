@@ -4,20 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7dfef061-ae1e-4c2f-91a7-f226baa34d7c" name="Changes" comment="Implemented a reference detection/storage mechanism in the SymbolVisitor and organized how edges are maintained in the UPPAALCreator">
-      <change afterPath="$PROJECT_DIR$/summer2024/doubledis.soar" afterDir="false" />
+    <list default="true" id="7dfef061-ae1e-4c2f-91a7-f226baa34d7c" name="Changes" comment="Implemented the reference storage mechanism in the SymbolVisitor which expands all shared and unique disjunctions before storing">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$Attr_value_makeContext.class" beforeDir="false" afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/gen/SoarParser$Attr_value_makeContext.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/soar/SoarTranslator.class" beforeDir="false" afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/soar/SoarTranslator.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/soar/SymbolTree.class" beforeDir="false" afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/soar/SymbolTree.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/soar/SymbolVisitor.class" beforeDir="false" afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/soar/SymbolVisitor.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/soar/UPPAALCreator$UPPAALElementWithXY.class" beforeDir="false" afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/soar/UPPAALCreator$UPPAALElementWithXY.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/soar/UPPAALCreator.class" beforeDir="false" afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/soar/UPPAALCreator.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/soar/UPPAALSemanticVisitor.class" beforeDir="false" afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/out/production/something2/edu/fit/hiai/lvca/translator/soar/UPPAALSemanticVisitor.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/java/edu/fit/hiai/lvca/translator/soar/SoarTranslator.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/java/edu/fit/hiai/lvca/translator/soar/SoarTranslator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/java/edu/fit/hiai/lvca/translator/soar/SymbolTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/java/edu/fit/hiai/lvca/translator/soar/SymbolTree.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/java/edu/fit/hiai/lvca/translator/soar/SymbolVisitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/java/edu/fit/hiai/lvca/translator/soar/SymbolVisitor.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/java/edu/fit/hiai/lvca/translator/soar/UPPAALCreator.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoarToUPPAALTranslator/src/main/java/edu/fit/hiai/lvca/translator/soar/UPPAALCreator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/summer2024/mac-rewritten-nopref.soar" beforeDir="false" afterPath="$PROJECT_DIR$/summer2024/mac-rewritten-nopref.soar" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -124,7 +115,7 @@
       <workItem from="1750707116568" duration="6439000" />
       <workItem from="1750774147271" duration="60000" />
       <workItem from="1750774222946" duration="4146000" />
-      <workItem from="1750941484097" duration="208715000" />
+      <workItem from="1750941484097" duration="224914000" />
     </task>
     <task id="LOCAL-00001" summary="test commit">
       <option name="closed" value="true" />
@@ -174,7 +165,15 @@
       <option name="project" value="LOCAL" />
       <updated>1752678007741</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Implemented the reference storage mechanism in the SymbolVisitor which expands all shared and unique disjunctions before storing">
+      <option name="closed" value="true" />
+      <created>1753111194662</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1753111194662</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -198,7 +197,8 @@
     <MESSAGE value="updates to expandDisjunctionStringVariables(): fixed how global variables with multiple disjunctions are expanded" />
     <MESSAGE value="created simple soar example for testing references" />
     <MESSAGE value="Implemented a reference detection/storage mechanism in the SymbolVisitor and organized how edges are maintained in the UPPAALCreator" />
-    <option name="LAST_COMMIT_MESSAGE" value="Implemented a reference detection/storage mechanism in the SymbolVisitor and organized how edges are maintained in the UPPAALCreator" />
+    <MESSAGE value="Implemented the reference storage mechanism in the SymbolVisitor which expands all shared and unique disjunctions before storing" />
+    <option name="LAST_COMMIT_MESSAGE" value="Implemented the reference storage mechanism in the SymbolVisitor which expands all shared and unique disjunctions before storing" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
