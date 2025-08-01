@@ -1,0 +1,47 @@
+sp {mac*propose*initialize-mac
+    (state <s> ^superstate nil
+        -^name)
+-->
+    (<s> ^operator <o> + =)
+    (<o> ^name initialize-mac)}
+
+sp {mac*apply*initialize-mac
+  (state <s> ^operator.name initialize-mac)
+-->
+    (<s> ^name mac
+        ^right-bank <r>
+        ^left-bank <l>)
+    (<r> ^cannibals 0
+        ^other-bank <l>)
+    (<l> ^cannibals 4
+        ^other-bank <r>)}
+
+sp {propose*operator*move-2-cannibals
+    (state <s> ^name mac
+        ^left-bank <bank>)
+    (<bank> ^cannibals > 0)
+-->
+    (<s> ^operator <o> + =)
+    (<o> ^name move-mac-boat
+        ^bank <bank>
+        ^cannibals 2)}
+
+sp {apply*move-2-cannibals
+    (state <s> ^operator <o>)
+    (<o> ^name move-mac-boat
+        ^cannibals <num-to-be-moved>
+        ^bank <bk>)
+    (<bk> ^cannibals <bank-num>
+        ^other-bank <obk>)
+    (<obk> ^cannibals <obank-num>)
+-->
+    (<bk> ^cannibals <bank-num> -
+           ^cannibals (- <bank-num> <num-to-be-moved>))
+    (<obk> ^cannibals <obank-num> -
+           ^cannibals (+ <obank-num> <num-to-be-moved>))}
+
+sp {detect*state*success
+    (state <s> ^right-bank.cannibals 4)
+-->
+    (write (crlf) |The problem has been solved.|)
+    (halt)}

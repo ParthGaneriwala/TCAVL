@@ -3,7 +3,7 @@ sp {mac*propose*initialize-mac
   (state <s> ^superstate nil
     -^name)
 -->
-  (<s> ^operator <o> +)
+  (<s> ^operator <o> + =)
   (<o> ^name initialize-mac)}
 
 sp {mac*apply*initialize-mac
@@ -26,14 +26,17 @@ sp {mac*apply*initialize-mac
   ^cannibals 3
   ^boat 1)}
 
+
 sp {mac*propose*operator*move-mac-boat1
   (state <s> ^name mac
     ^<< right-bank left-bank >> <bank>)
-  (<bank> ^boat 1)
+  (<bank> ^{ << cannibals missionaries >> <type> } > 0
+  ^boat 1)               
 -->
 (<s> ^operator <o> + =)
 (<o> ^name move-mac-boat
   ^bank <bank>
+  ^<type> 1
   ^boat 1
   ^types 1)}
 
@@ -114,13 +117,18 @@ sp {monitor*state*left
   (write (crlf) | M: | <ml> |, C: | <cl> | ~~~ B |
     | M: | <mr> |, C: | <cr> | |)}
 
-# mac*detect*goal*achieved
-# If the name of the state is mac and the number of missionaries and
-# cannibals on one bank of the river in the desired state matches thenumber
-# of missionaries and cannibals on the same bank in the current state,write
-# that the problem has been solved and halt.
 
-
+sp {mac*detect*state*success
+  (state <s> ^desired <d>
+    ^<side> <ls>)
+  (<ls> ^missionaries <m>
+    ^cannibals <c>)
+  (<d> ^{ << right-bank left-bank >> <side> } <dls>)
+  (<dls> ^missionaries <m>
+    ^cannibals <c>)
+-->
+  (write (crlf) |The problem has been solved.|)
+  (halt)}
 
 sp {mac*evaluate*state*failure*more*cannibals
   (state <s> ^desired <d>
@@ -149,7 +157,7 @@ sp {mac*apply*move-mac-boat*record*last-operator*types*2
   (state <s> ^name mac
     ^operator <o>)
   (<o> ^name move-mac-boat
-    ^bank <bank>
+    ^bank <bank>                 ;# Should be ^boat <bank> instead here
     ^types 2)
 -->
   (<s> ^last-operator <o1>)
@@ -165,7 +173,7 @@ sp {mac*apply*move-mac-boat*remove*old*last-operator
 -->
   (<s> ^last-operator <lo> -)}
 
-sp {mac*select*operator*prefer*inverse*failure*types*2
+sp {mac*select*operator*prefer*inverse*failure*types*1
   (state <s> ^name mac
     ^operator <o> +
     ^failure <d>
@@ -179,10 +187,10 @@ sp {mac*select*operator*prefer*inverse*failure*types*2
 -->
   (<s> ^operator <o> >)}
 
-sp {mac*select*operator*prefer*inverse*failure*types*1
+sp {mac*select*operator*prefer*inverse*failure*types*2
   (state <s> ^name mac
     ^operator <o> +
-    ^failure true
+    ^failure <d>                ;# "true" should be changed to <d>
     ^last-operator.types 2)
   (<o> ^types 2)
 -->
@@ -191,7 +199,7 @@ sp {mac*select*operator*prefer*inverse*failure*types*1
 sp {mac*select*operator*avoid*inverse*not*failure*1
   (state <s> ^name mac
     ^operator <o> +
-    -^failure true
+    -^failure <d>               ;# "true" should be changed to <d>
     ^last-operator <lo>)
   (<o> ^types 1
     ^<type> <number>)
@@ -204,10 +212,10 @@ sp {mac*select*operator*avoid*inverse*not*failure*1
 sp {mac*select*operator*avoid*inverse*not*failure*2
   (state <s> ^name mac
     ^operator <o> +
-    -^failure true
+    -^failure <d>               ;# "true" should be changed to <d>
     ^last-operator <lo>)
-  (<o> ^types 2)
-  (<lo> ^types 2)
+  (<o> ^types 2)                 
+  (<lo> ^types 2)                ;# can be combined with line 208 as "^last-operator.types 2"
 -->
   (<s> ^operator <o> < )}
 

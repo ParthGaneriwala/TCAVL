@@ -182,7 +182,7 @@ public interface SoarVisitor<T> extends ParseTreeVisitor<T> {
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitAttr_value_make(SoarParser.Attr_value_makeContext ctx);
+	T visitAttr_value_make(SoarParser.Attr_value_makeContext ctx, String varName);
 	/**
 	 * Visit a parse tree produced by {@link SoarParser#variable_or_sym_constant}.
 	 * @param ctx the parse tree
