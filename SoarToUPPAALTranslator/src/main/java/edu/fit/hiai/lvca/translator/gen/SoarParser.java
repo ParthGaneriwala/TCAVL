@@ -2167,9 +2167,9 @@ public class SoarParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof SoarListener ) ((SoarListener)listener).exitAttr_value_make(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SoarVisitor ) return ((SoarVisitor<? extends T>)visitor).visitAttr_value_make(this);
+		//@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor, String varName) {
+			if ( visitor instanceof SoarVisitor ) return ((SoarVisitor<? extends T>)visitor).visitAttr_value_make(this, varName);
 			else return visitor.visitChildren(this);
 		}
 	}

@@ -1,0 +1,19 @@
+sp {mac*propose*operator*move-mac-boat1
+    (state <s> ^name mac
+        ^ <<left-bank right-bank>> <bank>)
+    (<bank> ^cannibals <type>
+        ^boat 1)
+-->
+    (<s> ^operator <o> + =)
+    (<o> ^name move-mac-boat
+        ^bank <bank>
+        ^<type> 1
+        ^boat 1
+        ^types 1)}
+
+sp {mac*detect*state*success
+    (state <s> ^right-bank.cannibals 3
+    ^right-bank.missionaries 3)
+-->
+  (write (crlf) |The problem has been solved.|)
+  (halt)}

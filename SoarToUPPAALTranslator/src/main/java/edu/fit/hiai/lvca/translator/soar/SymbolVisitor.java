@@ -6,7 +6,6 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 /**
@@ -23,9 +22,12 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
     private Map<String, edu.fit.hiai.lvca.translator.soar.SymbolTree> workingMemoryStructure = new HashMap<>();
 
     private Map<String, String> currentVariableDictionary;
+    private Map<String, List<String>> currentDisjunctionMap;
     private String nestedVariableName;
-    private Map<String, Map<String, String>> globalVariableDictionary = new HashMap<>();
-    private  Set<String> groupingVariableNames = new HashSet<>();   //holds variable names that are used for intermediate groupings with "{}"
+    private final Map<String, Map<String, String>> globalVariableDictionary = new HashMap<>();
+    private final Map<String, Map<String, List<String>>> globalDisjunctionDictionary = new HashMap<>();
+    private Set<String> groupingVariableNames = new HashSet<>();   //holds variable names that are used for intermediate groupings with "{}"
+    private Map<String, Set<String>> referenceMap = new HashMap<>();
 
     public SymbolVisitor(SoarParser.SoarContext ctx)
     {
@@ -79,6 +81,10 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
         return globalVariableDictionary;
     }
 
+    Map<String, Map<String, List<String>>> getGlobalDisjunctionDictionary() { return globalDisjunctionDictionary; }
+
+    Map<String, Set<String>> getReferences() {return referenceMap; }
+
     @Override
     public edu.fit.hiai.lvca.translator.soar.SymbolTree visitSoar(SoarParser.SoarContext ctx)
     {
@@ -93,11 +99,14 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
     public edu.fit.hiai.lvca.translator.soar.SymbolTree visitSoar_production(SoarParser.Soar_productionContext ctx)
     {
         currentVariableDictionary = new HashMap<>();
+        currentDisjunctionMap = new HashMap<>();
         currentWorkingMemoryTree = getTree(ctx);
         System.out.println("Symbol visiting production name " + ctx.sym_constant().getText());
 
         System.out.println("    Symbol visiting condition side");
         ctx.condition_side().accept(this);
+
+        System.out.println("current variable dictionary: " + currentVariableDictionary.entrySet());
 
         System.out.println("    Symbol visiting action side");
         ctx.action_side().accept(this);
@@ -106,19 +115,23 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
 
         Map<String, String> variablePaths = new HashMap<>();
 
-        for (HashMap.Entry<String, String> varToValue : currentVariableDictionary.entrySet())
-        {
+        //System.out.println("current variable dictionary: " + currentVariableDictionary.entrySet());
+        for (HashMap.Entry<String, String> varToValue : currentVariableDictionary.entrySet()) {
+            //System.out.println(varToValue.getKey() + " = " + varToValue.getValue());
+            //System.out.println("vartoValue path: " + currentWorkingMemoryTree.pathTo(varToValue));
             //if variable name is just a grouping, then do not traverse entire tree, but return just the variable name
-            if(groupingVariableNames.contains(varToValue.getKey())){
+            if (groupingVariableNames.contains(varToValue.getKey())) {
                 variablePaths.put(varToValue.getKey(), (varToValue.getValue()));
-            }
-            else{
+            } else {
                 variablePaths.put(varToValue.getKey(), currentWorkingMemoryTree.pathTo(varToValue));
 
             }
         }
-
         globalVariableDictionary.put(ctx.sym_constant().getText(), variablePaths);
+        System.out.println("current disjunction dictionary: " + currentDisjunctionMap);
+        globalDisjunctionDictionary.put(ctx.sym_constant().getText(), currentDisjunctionMap);
+        System.out.println("global disjunction dictionary: " + globalDisjunctionDictionary);
+        System.out.println();
         return null;
     }
 
@@ -329,6 +342,9 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
      */
     @Override
     public edu.fit.hiai.lvca.translator.soar.SymbolTree visitDisjunction_test(SoarParser.Disjunction_testContext ctx) {
+        List<String> possibleConstants = new LinkedList<>();
+        ctx.constant().forEach(c -> possibleConstants.add(c.getText()));
+        currentDisjunctionMap.put(ctx.getText(), possibleConstants);
         ctx.constant().forEach(c -> c.accept(this));
         return null;
     }
@@ -397,7 +413,8 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
             edu.fit.hiai.lvca.translator.soar.SymbolTree attachPoint = ctx.variable().accept(this);
             System.out.println("        Action attach point is at " + attachPoint.name);
             ctx.attr_value_make().forEach(avm ->{
-                edu.fit.hiai.lvca.translator.soar.SymbolTree avmTree = avm.accept(this);
+                edu.fit.hiai.lvca.translator.soar.SymbolTree avmTree = avm.accept(this, attachPoint.name);
+                //System.out.println("            Value is " + avm.value_make().value().getText());
                 avmTree.value = avm.value_make().value().getText();
                 attachPoint.addChild(avmTree);
             } );
@@ -408,6 +425,7 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
     @Override
     public edu.fit.hiai.lvca.translator.soar.SymbolTree visitValue(SoarParser.ValueContext ctx)
     {
+        //System.out.println("visitValue: " + ctx.getText());
         ParseTree node = ctx.children.get(0);
 
 
@@ -423,31 +441,55 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
     }
 
     @Override
-    public edu.fit.hiai.lvca.translator.soar.SymbolTree visitAttr_value_make(SoarParser.Attr_value_makeContext ctx)
+    public edu.fit.hiai.lvca.translator.soar.SymbolTree visitAttr_value_make(SoarParser.Attr_value_makeContext ctx, String varName)
     {
+        System.out.println("------------visitAVM: " + ctx.getText());
         edu.fit.hiai.lvca.translator.soar.SymbolTree subtree = getTreeFromList(ctx.variable_or_sym_constant());
         nestedVariableName = null;
         edu.fit.hiai.lvca.translator.soar.SymbolTree rightHandTree = ctx.value_make().accept(this);
 
-
+        //System.out.println("            nestedVariableName: " + nestedVariableName);
         if (nestedVariableName != null)
         {
             if (rightHandTree == null)
             {
+                //System.out.println("            current var dic: " + currentVariableDictionary.entrySet());
+                //System.out.print("            testing: " + nestedVariableName);
                 if (!currentVariableDictionary.containsKey(nestedVariableName))
                 {
+                    //System.out.println("    var not in dictionary");
                     currentVariableDictionary.put(nestedVariableName, subtree.name);
+                    //System.out.println("            added: " + nestedVariableName + "->" + subtree.name);
+                }
+                else
+                {
+                    // A reference was detected
+                    System.out.println("*********** reference detected at: " + nestedVariableName);
+                    // Determines what the reference label is (key)
+                    String refKey = currentWorkingMemoryTree.pathTo(varName);
+                    for (SoarParser.Variable_or_sym_constantContext a : ctx.variable_or_sym_constant()) {
+                        String currentAttr = a.getText();
+                        if (currentAttr.contains("<") && currentAttr.contains(">")) { currentAttr = currentVariableDictionary.get(currentAttr); }
+                        refKey += "_" + currentAttr;
+                    }
+                    // Determines what the reference refers to (value)
+                    String refValue = currentWorkingMemoryTree.pathTo(currentVariableDictionary.get(nestedVariableName));
+                    // Calls the method to store the reference
+                    System.out.println("                refKey: " + refKey);
+                    System.out.println("                refValue: " + refValue);
+                    expandAndStoreReferences(refKey, refValue);
                 }
             }
             else
             {
+                //System.out.println("            rightHandTree: " + rightHandTree.name);
                 ctx.value_make().accept(this).getChildren()
                         .forEach(subtree::addChild);
             }
         }
         List<edu.fit.hiai.lvca.translator.soar.SymbolTree> subtreeChildren =  subtree.getChildren();
 
-
+        //System.out.println(currentVariableDictionary);
         return subtree;
     }
 
@@ -467,5 +509,82 @@ class SymbolVisitor extends SoarBaseVisitor<edu.fit.hiai.lvca.translator.soar.Sy
     public edu.fit.hiai.lvca.translator.soar.SymbolTree defaultResult()
     {
         return null;
+    }
+
+    // Expands all the common disjunctions between the reference key-value pair and passes them to the reference storage algorithm
+    private void expandAndStoreReferences(String refKey, String refValue)
+    {
+        Queue<String> expandedKeys = new LinkedList<>();
+        Queue<String> expandedValues = new LinkedList<>();
+
+        Queue<String> disjunctionKeys = new LinkedList<>();
+        Queue<String> disjunctionValues = new LinkedList<>();
+        disjunctionKeys.add(refKey);
+        disjunctionValues.add(refValue);
+        while (!disjunctionKeys.isEmpty() && !disjunctionValues.isEmpty()) {
+            String currentKey = disjunctionKeys.remove();
+            String currentValue = disjunctionValues.remove();
+            if (currentKey.contains("<<") && currentKey.contains(">>")) {
+                String disjunction = currentKey.substring(currentKey.indexOf("<<"), currentKey.indexOf(">>") + 2);
+                if (currentValue.contains(disjunction)) {
+                    if (currentDisjunctionMap.containsKey(disjunction)) {
+                        for (String constant : currentDisjunctionMap.get(disjunction)) {
+                            disjunctionKeys.add(currentKey.replace(disjunction, constant));
+                            disjunctionValues.add(currentValue.replace(disjunction, constant));
+                        }
+                    } else {
+                        throw new NoSuchElementException("Could not find values for disjunction: " + disjunction);
+                    }
+                }
+            } else {
+                expandedKeys.add(currentKey);
+                expandedValues.add(currentValue);
+            }
+        }
+        while (!expandedKeys.isEmpty() && !expandedValues.isEmpty()) {
+            storeReferences(expandedKeys.remove(), expandedValues.remove());
+        }
+    }
+
+    // Stores the specified references and expands any remaining disjunctions
+    private void storeReferences (String refKey, String refValue)
+    {
+        Set<String> allLocalKeys = unravelDisjunctions(refKey);
+        Set<String> allLocalValues = unravelDisjunctions(refValue);
+        for (String key : allLocalKeys) {
+
+            // If the specified key is already in the HashMap, then add the new values to the set of existing ones
+            if (referenceMap.containsKey(key)) {
+                Set<String> updatedValues = referenceMap.get(key);
+                updatedValues.addAll(allLocalValues);
+                referenceMap.replace(key, updatedValues);
+
+            // Else create a new element in the HashMap
+            } else {
+                referenceMap.put(key, allLocalValues);
+            }
+        }
+    }
+
+    private Set<String> unravelDisjunctions(String variable) {
+        Set<String> expandedStrings = new HashSet<>();
+        Queue<String> variables = new LinkedList<>();
+        variables.add(variable);
+        while (!variables.isEmpty()) {
+            String current = variables.remove();
+            if (current.contains("<<") && current.contains(">>")) {
+                String disjunction = current.substring(current.indexOf("<<"), current.indexOf(">>") + 2);
+                if (currentDisjunctionMap.containsKey(disjunction)) {
+                    for (String constant : currentDisjunctionMap.get(disjunction)) {
+                        variables.add(current.replace(disjunction, constant));
+                    }
+                } else {
+                    throw new NoSuchElementException("Could not find values for disjunction: " + disjunction);
+                }
+            } else {
+                expandedStrings.add(current);
+            }
+        }
+        return expandedStrings;
     }
 }
